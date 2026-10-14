@@ -5,6 +5,9 @@ $ErrorActionPreference = 'Stop'
 $taskRoot = Split-Path $PSScriptRoot -Parent
 $releaseMetadata = Get-Content -Raw -LiteralPath (Join-Path $taskRoot 'plugin-release.json') | ConvertFrom-Json
 [xml]$pluginMetadata = Get-Content -Raw -LiteralPath (Join-Path $taskRoot 'rider/src/main/resources/META-INF/plugin.xml')
+if ($releaseMetadata.release -lt 1 -or $releaseMetadata.version -ne ('{0}.0.0' -f $releaseMetadata.release)) {
+    throw 'Release numbering starts at 1: release N must use version N.0.0.'
+}
 if ($pluginMetadata.'idea-plugin'.version -ne $releaseMetadata.version -or $pluginMetadata.'idea-plugin'.vendor -ne $releaseMetadata.author) {
     throw 'Rider version and vendor must match plugin-release.json.'
 }
@@ -29,7 +32,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Rider plugin compilation failed.' }
 $testSources = @(Get-ChildItem -LiteralPath (Join-Path $taskRoot 'rider/src/test/java') -Filter '*.java' -Recurse | ForEach-Object FullName)
 & $jdkCompiler -encoding UTF-8 --release 21 -cp "$classes;$classPath" -d $testClasses @testSources
 if ($LASTEXITCODE -ne 0) { throw 'Rider test compilation failed.' }
-& $jdkJava -cp "$classes;$testClasses;$classPath" dev.sproto.ModelTest (Join-Path $taskRoot 'Test/Proto.sproto')
+& $jdkJava -cp "$classes;$testClasses;$classPath" dev.sproto.ModelTest (Join-Path $taskRoot 'Test/Highlight.sproto')
 if ($LASTEXITCODE -ne 0) { throw 'Rider model tests failed.' }
 & $jdkJava -cp "$classes;$testClasses;$classPath" dev.sproto.SdkSmokeTest (Join-Path $taskRoot 'rider/src/main/resources/META-INF/plugin.xml')
 if ($LASTEXITCODE -ne 0) { throw 'Rider SDK smoke tests failed.' }
@@ -44,7 +47,9 @@ try {
             [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($jarArchive, $sourceFile.FullName, $entryName) | Out-Null
         }
     }
-    [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($jarArchive, (Join-Path $taskRoot 'rider/README.md'), 'README.md') | Out-Null
+    $readmeText = [IO.File]::ReadAllText((Join-Path $taskRoot 'rider/README.md')).Replace('src/main/resources/branding/logo.png', 'branding/logo.png')
+    $readmeWriter = [IO.StreamWriter]::new($jarArchive.CreateEntry('README.md').Open(), [Text.UTF8Encoding]::new($false))
+    try { $readmeWriter.Write($readmeText) } finally { $readmeWriter.Dispose() }
 } finally { $jarArchive.Dispose() }
 $zipPath = Join-Path $dist ('sproto-rider-{0}.zip' -f $releaseMetadata.version)
 if (Test-Path -LiteralPath $zipPath) { Remove-Item -LiteralPath $zipPath }

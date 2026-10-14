@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>dev.sproto.language</id>
     <name>Sproto Language</name>
-    <version>0.1.6</version>
+    <version>1.0.0</version>
     <vendor>Yexiao</vendor>
     <description><![CDATA[
         <h2>Features</h2>

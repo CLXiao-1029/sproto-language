@@ -1,5 +1,7 @@
 # Sproto Language for Visual Studio Code
 
+<img src="images/logo.png" alt="SProto logo" width="480" />
+
 作者：**Yexiao**。
 
 The extension provides bilingual Chinese/English labels, settings descriptions, color-panel controls, completion details and diagnostics. / 本插件的标签、设置说明、颜色面板、补全详情和诊断提示均提供中英文文本。

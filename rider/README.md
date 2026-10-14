@@ -1,5 +1,7 @@
 # Sproto Language for JetBrains Rider
 
+<img src="src/main/resources/branding/logo.png" alt="SProto logo" width="480" />
+
 作者：**Yexiao**。
 
 The plugin provides bilingual Chinese/English descriptions, color settings, completion details and diagnostics. / 插件说明、颜色设置、补全详情和诊断提示均提供中英文文本。

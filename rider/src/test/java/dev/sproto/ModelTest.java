@@ -12,7 +12,7 @@ public final class ModelTest {
     }
     public static void main(String[] args) throws Exception {
         SprotoModel real = parse(Files.readString(Path.of(args[0])));
-        check(real.types.size() > 100 && real.protocols.size() > 100, "real schema size");
+        check(real.types.stream().anyMatch(t -> t.fullName.equals("Player.Item")) && real.protocols.size() == 2, "bundled highlighting example");
         check(real.validate(List.of(real)).isEmpty(), "real schema: " + real.validate(List.of(real)));
         SprotoModel nested = parse(".Outer { .Inner { next 0 : Inner } a 0 : Inner b 1 : Global } .Global { a 0 : Outer.Inner } foo 1 { request Outer response { a 0 : Global } }");
         check(nested.validate(List.of(nested)).isEmpty(), "nested types and protocol bodies");

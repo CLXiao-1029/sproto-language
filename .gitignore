@@ -3,4 +3,5 @@ build/
 node_modules/
 .gradle/
 .idea/
+.vs/
 *.iml

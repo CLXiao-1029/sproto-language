@@ -12,6 +12,7 @@ import com.intellij.openapi.options.colors.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
@@ -29,6 +30,7 @@ import java.util.*;
 
 /** IntelliJ frontend extensions; Rider uses its built-in JVM platform, no external runtime. */
 public final class SprotoSupport {
+    public static final Icon SPROTO_ICON = IconLoader.getIcon("/META-INF/pluginIcon.svg", SprotoSupport.class);
     public static final class SprotoLanguage extends Language {
         public static final SprotoLanguage INSTANCE = new SprotoLanguage();
         private SprotoLanguage() { super("Sproto"); }
@@ -39,7 +41,7 @@ public final class SprotoSupport {
         @Override public @NotNull String getName() { return "Sproto"; }
         @Override public @NotNull String getDescription() { return "Sproto protocol schema"; }
         @Override public @NotNull String getDefaultExtension() { return "sproto"; }
-        @Override public @Nullable Icon getIcon() { return null; }
+        @Override public @Nullable Icon getIcon() { return SPROTO_ICON; }
     }
     public static final IElementType ID = new IElementType("IDENTIFIER", SprotoLanguage.INSTANCE);
     public static final IElementType TYPE_NAME = new IElementType("TYPE_NAME", SprotoLanguage.INSTANCE);
@@ -231,7 +233,7 @@ public final class SprotoSupport {
         @Override public @NotNull SyntaxHighlighter getSyntaxHighlighter(@Nullable Project project, @Nullable VirtualFile file) { return new Highlighter(); }
     }
     public static final class SprotoColorSettings implements ColorSettingsPage {
-        @Override public @Nullable Icon getIcon() { return null; }
+        @Override public @Nullable Icon getIcon() { return SPROTO_ICON; }
         @Override public @NotNull SyntaxHighlighter getHighlighter() { return new Highlighter(); }
         @Override public @NotNull String getDemoText() {
             return "# Sproto protocol schema\n.Player {\n    .Item { id 0 : integer }\n    id 0 : integer(3)\n    name 1 : string\n    raw 2 : binary\n    weight 3 : double\n    friend 4 : Player\n    items 5 : *Player.Item(id)\n}\nLogin 1 {\n    request Player\n    response { ok 0 : boolean }\n}\nPing 2 { response nil }";

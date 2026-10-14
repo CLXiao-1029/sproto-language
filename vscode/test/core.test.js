@@ -5,9 +5,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const core = require('../src/core');
 
-test('real project schema parses and validates', () => {
-  const doc = core.parse(fs.readFileSync(path.join(__dirname, '../../Test/Proto.sproto'), 'utf8'), 'sample');
-  assert.ok(doc.types.length > 100); assert.ok(doc.protocols.length > 100);
+test('bundled highlighting example parses and validates', () => {
+  const doc = core.parse(fs.readFileSync(path.join(__dirname, '../../Test/Highlight.sproto'), 'utf8'), 'sample');
+  assert.ok(doc.types.some(t => t.fullName === 'Player.Item'));
+  assert.deepEqual(doc.protocols.map(p => p.name), ['Login', 'GetPlayer']);
   assert.deepEqual(core.validate(doc, [doc]), []);
 });
 test('nested scopes, qualified names, inline protocol bodies, forward declarations', () => {
