@@ -5,8 +5,8 @@ $ErrorActionPreference = 'Stop'
 $taskRoot = Split-Path $PSScriptRoot -Parent
 $releaseMetadata = Get-Content -Raw -LiteralPath (Join-Path $taskRoot 'plugin-release.json') | ConvertFrom-Json
 [xml]$pluginMetadata = Get-Content -Raw -LiteralPath (Join-Path $taskRoot 'rider/src/main/resources/META-INF/plugin.xml')
-if ($releaseMetadata.release -lt 1 -or $releaseMetadata.version -ne ('{0}.0.0' -f $releaseMetadata.release)) {
-    throw 'Release numbering starts at 1: release N must use version N.0.0.'
+if ($releaseMetadata.version -notmatch '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$') {
+    throw 'Plugin version must use major.minor.patch format. Routine fixes increment patch.'
 }
 if ($pluginMetadata.'idea-plugin'.version -ne $releaseMetadata.version -or $pluginMetadata.'idea-plugin'.vendor -ne $releaseMetadata.author) {
     throw 'Rider version and vendor must match plugin-release.json.'

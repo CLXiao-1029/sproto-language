@@ -2,8 +2,8 @@ $ErrorActionPreference = 'Stop'
 $taskRoot = Split-Path $PSScriptRoot -Parent
 $releaseMetadata = Get-Content -Raw -LiteralPath (Join-Path $taskRoot 'plugin-release.json') | ConvertFrom-Json
 $extensionMetadata = Get-Content -Raw -LiteralPath (Join-Path $taskRoot 'vscode/package.json') | ConvertFrom-Json
-if ($releaseMetadata.release -lt 1 -or $releaseMetadata.version -ne ('{0}.0.0' -f $releaseMetadata.release)) {
-    throw 'Release numbering starts at 1: release N must use version N.0.0.'
+if ($releaseMetadata.version -notmatch '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$') {
+    throw 'Plugin version must use major.minor.patch format. Routine fixes increment patch.'
 }
 if ($extensionMetadata.version -ne $releaseMetadata.version -or $extensionMetadata.author -ne $releaseMetadata.author -or $extensionMetadata.publisher -ne $releaseMetadata.author) {
     throw 'VS Code version, author and publisher must match plugin-release.json.'
