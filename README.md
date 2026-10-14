@@ -29,10 +29,10 @@ VS Code 多文件夹工作区按文件夹隔离索引，排除 `.git`、`node_mo
 
 ## 安装
 
-构建输出在 `dist/`（VS Code 与 Rider 统一版本 1.0.0，第 1 次正式编号）：
+构建输出在 `dist/`（VS Code 与 Rider 统一版本 2.0.0，第 2 次正式编号）：
 
-- VS Code：扩展面板右上角 `…` → **Install from VSIX…** → 选择 `sproto-vscode-1.0.0.vsix`，运行 **Developer: Reload Window**。不要通过 Visual Studio 的 VSIX Installer 双击安装。
-- Rider：Settings → Plugins → 齿轮 → **Install Plugin from Disk…** → 选择 `sproto-rider-1.0.0.zip`，按 IDE 提示重启。
+- VS Code：扩展面板右上角 `…` → **Install from VSIX…** → 选择 `sproto-vscode-2.0.0.vsix`，运行 **Developer: Reload Window**。不要通过 Visual Studio 的 VSIX Installer 双击安装。
+- Rider：Settings → Plugins → 齿轮 → **Install Plugin from Disk…** → 选择 `sproto-rider-2.0.0.zip`，按 IDE 提示重启。
 
 VS Code 的发布者标识已更新为 `Yexiao`，扩展 ID 为 `Yexiao.sproto-language`。从旧版升级时先卸载 `sproto-tools.sproto-language`，再安装新包，避免同时启用两个提供同名语言功能的扩展。已有 `sproto.colors.*` 设置可继续使用。
 
@@ -45,6 +45,8 @@ VS Code 的发布者标识已更新为 `Yexiao`，扩展 ID 为 `Yexiao.sproto-l
 正式发行编号从 1 开始累计，对应插件版本 `1.0.0`、`2.0.0`、`3.0.0` 等；两端同步更新。原有 0.x 安装包全部归档到 `dist/archive/0.x/`，归档索引记录文件名、版本、大小与 SHA-256。
 
 统一品牌素材位于 `assets/branding/`：VS Code 使用 PNG 图标与 Logo；Rider 使用 SVG 插件/文件图标与 PNG Logo。
+
+2.0.0 修复 VS Code 插件说明中的 Logo 加载：仓库元数据使用 HTTPS，说明图片指向 GitHub `master/vscode/images/logo.png` 的绝对 HTTPS 地址。Rider 将文件图标拆分为 16×16 的 `icons/sprotoFile.svg`，插件列表仍使用 40×40 的 `META-INF/pluginIcon.svg`。1.0.0 安装包保留在 `dist/archive/1.0.0/`。
 
 安装后可打开 `Test/Highlight.sproto` 检查颜色。VS Code 状态栏的语言模式应为 **Sproto**；若该文件曾关联到纯文本或其他语言，可通过右下角语言模式切换到 Sproto。用户自定义的颜色或显式关闭语义高亮设置会优先于插件默认值。
 

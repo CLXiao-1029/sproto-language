@@ -1,6 +1,6 @@
 # Sproto Language for Visual Studio Code
 
-<img src="images/logo.png" alt="SProto logo" width="480" />
+<img src="https://raw.githubusercontent.com/CLXiao-1029/sproto-language/master/vscode/images/logo.png" alt="SProto logo" width="480" />
 
 作者：**Yexiao**。
 

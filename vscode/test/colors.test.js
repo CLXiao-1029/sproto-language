@@ -11,6 +11,10 @@ test('GUI settings schema covers all categories and inherits native defaults', (
   assert.equal(manifest.version, release.version);
   assert.equal(manifest.author, release.author);
   assert.equal(manifest.publisher, release.author);
+  assert.ok(manifest.repository.url.startsWith('https://github.com/'));
+  const readme = require('node:fs').readFileSync(require('node:path').join(__dirname, '../README.md'), 'utf8');
+  const image = readme.match(/<img\s+src="([^"]+)"/);
+  assert.ok(image && image[1].startsWith('https://raw.githubusercontent.com/'));
   const properties = manifest.contributes.configuration.properties;
   assert.equal(manifest.contributes.configuration.title, 'Sproto');
   for (const c of colors.categories) {

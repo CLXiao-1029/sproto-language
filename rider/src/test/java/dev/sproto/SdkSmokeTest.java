@@ -11,6 +11,12 @@ import org.w3c.dom.*;
 public final class SdkSmokeTest {
     public static void main(String[] args) throws Exception {
         Document descriptor = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(Path.of(args[0]).toFile());
+        Path resources = Path.of(args[0]).getParent().getParent();
+        Element smallIcon = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(resources.resolve("icons/sprotoFile.svg").toFile()).getDocumentElement();
+        Element pluginIcon = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(resources.resolve("META-INF/pluginIcon.svg").toFile()).getDocumentElement();
+        if (!smallIcon.getAttribute("width").equals("16") || !smallIcon.getAttribute("height").equals("16")) throw new AssertionError("file icon must be 16x16");
+        if (!pluginIcon.getAttribute("width").equals("40") || !pluginIcon.getAttribute("height").equals("40")) throw new AssertionError("plugin icon must remain 40x40");
+        if (SprotoSupport.SprotoFileType.INSTANCE.getIcon() != SprotoSupport.FILE_ICON) throw new AssertionError("file type must use the small icon");
         NodeList extensions = descriptor.getElementsByTagName("extensions").item(0).getChildNodes();
         int count = 0;
         for (int i = 0; i < extensions.getLength(); i++) {
