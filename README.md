@@ -34,7 +34,7 @@ VS Code 多文件夹工作区按文件夹隔离索引，排除 `.git`、`node_mo
 - VS Code：扩展面板右上角 `…` → **Install from VSIX…** → 选择 `sproto-vscode-1.0.1.vsix`，运行 **Developer: Reload Window**。不要通过 Visual Studio 的 VSIX Installer 双击安装。
 - Rider：Settings → Plugins → 齿轮 → **Install Plugin from Disk…** → 选择 `sproto-rider-1.0.1.zip`，按 IDE 提示重启。
 
-VS Code 的发布者标识已更新为 `Yexiao`，扩展 ID 为 `Yexiao.sproto-language`。从旧版升级时先卸载 `sproto-tools.sproto-language`，再安装新包，避免同时启用两个提供同名语言功能的扩展。已有 `sproto.colors.*` 设置可继续使用。
+VS Code 发布者为 `Yexiao`，内部名称为 `sproto-language-yexiao`，扩展 ID 为 `Yexiao.sproto-language-yexiao`，显示名称仍为 **Sproto Language**。此前名称 `sproto-language` 与 Marketplace 已有扩展冲突，因此首次市场发布使用新名称。从本地旧版升级时，先卸载 `Yexiao.sproto-language` 或 `sproto-tools.sproto-language`，再安装新包，避免两个扩展重复提供语言功能。已有 `sproto.colors.*` 设置可继续使用。GitHub 仓库名与 Rider 插件 ID 保持不变。
 
 默认字段为白色 `#FFFFFF`，内置类型为 VS Code 蓝色 `#569CD6`；类型默认青绿色，两端协议方法名默认浅黄色 `#DCDCAA`。数字、注释、关键字及符号未设置固定默认颜色，继承当前主题。VS Code 设置面板内有 **Sproto** 分类，命令 **Sproto: 配置高亮颜色** 提供图形化颜色选择器。Rider 提供中文分组的 **Color Scheme → Sproto** 设置页面。声明、引用与各种语法角色可分别设置。详见 [完整颜色配置说明](docs/highlighting.md)。
 

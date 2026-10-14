@@ -66,7 +66,8 @@ test('GUI saves scoped overrides, rejects invalid payloads, restores inheritance
   const context = { subscriptions: [], extension: { packageJSON: require('../package.json') } };
   colors.register(vscode, context, core, d => core.parse(d.getText()));
   commands['sproto.openSettings']();
-  assert.deepEqual(executed, ['workbench.action.openSettings', '@ext:Yexiao.sproto-language']);
+  const manifest = context.extension.packageJSON;
+  assert.deepEqual(executed, ['workbench.action.openSettings', `@ext:${manifest.publisher}.${manifest.name}`]);
   commands['sproto.configureColors']();
   const send = message => callbacks.message[0](message);
   await send({ type: 'load', scope: 'user' });

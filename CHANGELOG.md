@@ -6,6 +6,7 @@
 
 ### VS Code
 
+- 为首次 Marketplace 发布解决内部名称冲突：`name` 改为 `sproto-language-yexiao`，完整扩展 ID 为 `Yexiao.sproto-language-yexiao`；显示名称仍为 Sproto Language，作者仍为 Yexiao。
 - 修复插件说明中的 Logo 无法加载：补齐 HTTPS GitHub 仓库信息、插件子目录、主页与问题反馈地址。
 - README 源文件保留 `./images/logo.png` 相对路径，便于项目内预览；构建 VSIX 时自动转换为正确的绝对 HTTPS 图片地址，适配扩展详情页的图片加载要求。
 - 调整图片验证测试：允许实际存在的本地相对路径，不再限定源文件只能使用固定的 GitHub 图片地址。
@@ -33,6 +34,7 @@
 ### English release notes
 
 - **VS Code:** Fixed the README logo by adding HTTPS repository metadata and resolving local relative image paths to absolute HTTPS URLs when packaging. Local README previews can retain their relative paths.
+- **Marketplace:** The extension is named `sproto-language-yexiao` to avoid the existing `sproto-language` name. Its display name remains Sproto Language.
 - **Rider:** Added a dedicated 16×16 file icon for the project tree, editor tabs and color settings. The plugin-list icon remains 40×40.
 - **Versioning:** Both plugins use 1.0.1. Routine fixes increment the patch version instead of automatically increasing the major version. Existing color settings are preserved.
 - **Validation:** VS Code tests, Rider model/SDK checks and package-content checks passed. Current package hashes are listed in `dist/index.json`.

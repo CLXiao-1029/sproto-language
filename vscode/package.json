@@ -1,5 +1,5 @@
 {
-  "name": "sproto-language",
+  "name": "sproto-language-yexiao",
   "displayName": "Sproto Language",
   "icon": "images/icon.png",
   "description": "Sproto language support for VS Code: scoped type navigation, completion, diagnostics and configurable semantic colors.",
