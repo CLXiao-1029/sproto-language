@@ -1,0 +1,27 @@
+{
+  "name": "Sproto",
+  "scopeName": "source.sproto",
+  "patterns": [
+    { "name": "comment.line.number-sign.sproto", "match": "#.*$" },
+    { "match": "(\\.)([A-Za-z_][A-Za-z_0-9]*)(?=\\s*\\{)", "captures": { "1": { "name": "punctuation.definition.type.sproto" }, "2": { "name": "entity.name.type.declaration.sproto" } } },
+    { "match": "\\b([A-Za-z_][A-Za-z_0-9]*)(\\s+)([0-9]+)(\\s*)(:)", "captures": { "1": { "name": "variable.other.member.declaration.sproto" }, "3": { "name": "constant.numeric.field-tag.sproto" }, "5": { "name": "punctuation.separator.field.sproto" } } },
+    { "match": "\\b([A-Za-z_][A-Za-z_0-9]*)\\s+([0-9]+)(?=\\s*\\{)", "captures": { "1": { "name": "entity.name.function.declaration.sproto" }, "2": { "name": "constant.numeric.protocol-tag.sproto" } } },
+    { "match": "(\\()\\s*([A-Za-z_][A-Za-z_0-9]*)\\s*(\\))", "captures": { "1": { "name": "punctuation.section.parentheses.sproto" }, "2": { "name": "variable.other.member.reference.sproto" }, "3": { "name": "punctuation.section.parentheses.sproto" } } },
+    { "match": "(\\()\\s*([0-9]+)\\s*(\\))", "captures": { "1": { "name": "punctuation.section.parentheses.sproto" }, "2": { "name": "constant.numeric.precision.sproto" }, "3": { "name": "punctuation.section.parentheses.sproto" } } },
+    { "name": "keyword.control.request.sproto", "match": "\\brequest\\b" },
+    { "name": "keyword.control.response.sproto", "match": "\\bresponse\\b" },
+    { "name": "support.type.integer.sproto", "match": "\\binteger\\b" },
+    { "name": "support.type.boolean.sproto", "match": "\\bboolean\\b" },
+    { "name": "support.type.string.sproto", "match": "\\bstring\\b" },
+    { "name": "support.type.binary.sproto", "match": "\\bbinary\\b" },
+    { "name": "support.type.double.sproto", "match": "\\bdouble\\b" },
+    { "name": "support.type.nil.sproto", "match": "\\bnil\\b" },
+    { "name": "constant.numeric.sproto", "match": "\\b[0-9]+\\b" },
+    { "name": "keyword.operator.array.sproto", "match": "\\*" },
+    { "name": "punctuation.section.braces.sproto", "match": "[{}]" },
+    { "name": "punctuation.section.parentheses.sproto", "match": "[()]" },
+    { "name": "punctuation.separator.type.sproto", "match": "\\." },
+    { "name": "punctuation.separator.field.sproto", "match": ":" },
+    { "name": "entity.name.type.reference.sproto", "match": "\\b[A-Za-z_][A-Za-z_0-9]*\\b" }
+  ]
+}

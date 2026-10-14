@@ -1,0 +1,30 @@
+# 类型（青绿色）：Player、Item，包括声明和类型引用
+# 字段（默认白色）：id、name、items、player、ok；字典键引用可单独配置
+# 协议方法（默认浅黄色）：Login、GetPlayer
+# 内置类型（默认 VSCode 蓝色）：integer、string、boolean、nil
+# 类型声明与引用、字段声明与引用、各内置类型、编号与精度均可单独配置
+.Player {
+    .Item {
+        id 0 : integer
+        count 1 : integer
+    }
+
+    id 0 : integer
+    name 1 : string
+    items 2 : *Item(id)
+}
+
+Login 1 {
+    request {
+        name 0 : string
+    }
+    response {
+        player 0 : Player
+        ok 1 : boolean
+    }
+}
+
+GetPlayer 2 {
+    request Player
+    response nil
+}

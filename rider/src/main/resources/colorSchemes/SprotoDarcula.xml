@@ -1,0 +1,13 @@
+<list>
+    <option name="SPROTO_TYPE_DECLARATION"><value><option name="FOREGROUND" value="4EC9B0"/></value></option>
+    <option name="SPROTO_TYPE_REFERENCE"><value><option name="FOREGROUND" value="4EC9B0"/></value></option>
+    <option name="SPROTO_FIELD_DECLARATION"><value><option name="FOREGROUND" value="FFFFFF"/></value></option>
+    <option name="SPROTO_FIELD_REFERENCE"><value><option name="FOREGROUND" value="FFFFFF"/></value></option>
+    <option name="SPROTO_PROTOCOL_DECLARATION"><value><option name="FOREGROUND" value="DCDCAA"/><option name="FONT_TYPE" value="1"/></value></option>
+    <option name="SPROTO_INTEGER"><value><option name="FOREGROUND" value="569CD6"/></value></option>
+    <option name="SPROTO_BOOLEAN"><value><option name="FOREGROUND" value="569CD6"/></value></option>
+    <option name="SPROTO_STRING"><value><option name="FOREGROUND" value="569CD6"/></value></option>
+    <option name="SPROTO_BINARY"><value><option name="FOREGROUND" value="569CD6"/></value></option>
+    <option name="SPROTO_DOUBLE"><value><option name="FOREGROUND" value="569CD6"/></value></option>
+    <option name="SPROTO_NIL"><value><option name="FOREGROUND" value="569CD6"/></value></option>
+</list>

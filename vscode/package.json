@@ -1,0 +1,512 @@
+{
+  "name": "sproto-language",
+  "displayName": "Sproto Language",
+  "description": "Sproto language support for VS Code: scoped type navigation, completion, diagnostics and configurable semantic colors.",
+  "version": "0.1.6",
+  "publisher": "Yexiao",
+  "author": "Yexiao",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./src/extension.js",
+  "activationEvents": [
+    "onLanguage:sproto"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "contributes": {
+    "semanticTokenTypes": [
+      {
+        "id": "sprotoType",
+        "superType": "class",
+        "description": "Sproto type declarations and references"
+      },
+      {
+        "id": "sprotoField",
+        "superType": "property",
+        "description": "Sproto fields and dictionary keys"
+      },
+      {
+        "id": "sprotoProtocol",
+        "superType": "function",
+        "description": "Sproto RPC protocol methods"
+      },
+      {
+        "id": "sprotoBuiltin",
+        "superType": "type",
+        "description": "Sproto built-in types"
+      },
+      {
+        "id": "sprotoPunctuation",
+        "superType": "operator",
+        "description": "Sproto punctuation and array marker"
+      }
+    ],
+    "semanticTokenModifiers": [
+      {
+        "id": "reference",
+        "description": "类型或字段引用"
+      },
+      {
+        "id": "integer",
+        "description": "integer 内置类型"
+      },
+      {
+        "id": "boolean",
+        "description": "boolean 内置类型"
+      },
+      {
+        "id": "string",
+        "description": "string 内置类型"
+      },
+      {
+        "id": "binary",
+        "description": "binary 内置类型"
+      },
+      {
+        "id": "double",
+        "description": "double 内置类型"
+      },
+      {
+        "id": "nil",
+        "description": "nil 消息体"
+      },
+      {
+        "id": "request",
+        "description": "request 关键字"
+      },
+      {
+        "id": "response",
+        "description": "response 关键字"
+      },
+      {
+        "id": "fieldTag",
+        "description": "字段编号"
+      },
+      {
+        "id": "protocolTag",
+        "description": "协议编号"
+      },
+      {
+        "id": "precision",
+        "description": "定点数小数精度"
+      },
+      {
+        "id": "typeMarker",
+        "description": "类型声明前的点号"
+      },
+      {
+        "id": "typeSeparator",
+        "description": "限定类型名的点号"
+      },
+      {
+        "id": "fieldSeparator",
+        "description": "字段类型前的冒号"
+      },
+      {
+        "id": "array",
+        "description": "数组星号"
+      },
+      {
+        "id": "braces",
+        "description": "结构体大括号"
+      },
+      {
+        "id": "parentheses",
+        "description": "索引或精度圆括号"
+      },
+      {
+        "id": "unknown",
+        "description": "未识别符号"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "sproto",
+        "scopes": {
+          "sprotoType": [
+            "entity.name.type.sproto"
+          ],
+          "sprotoType.declaration": [
+            "entity.name.type.declaration.sproto"
+          ],
+          "sprotoType.reference": [
+            "entity.name.type.reference.sproto"
+          ],
+          "sprotoField": [
+            "variable.other.member.sproto"
+          ],
+          "sprotoField.declaration": [
+            "variable.other.member.declaration.sproto"
+          ],
+          "sprotoField.reference": [
+            "variable.other.member.reference.sproto"
+          ],
+          "sprotoProtocol": [
+            "entity.name.function.sproto"
+          ],
+          "sprotoProtocol.declaration": [
+            "entity.name.function.declaration.sproto"
+          ],
+          "sprotoBuiltin": [
+            "support.type.sproto"
+          ],
+          "sprotoBuiltin.integer": [
+            "support.type.integer.sproto"
+          ],
+          "sprotoBuiltin.boolean": [
+            "support.type.boolean.sproto"
+          ],
+          "sprotoBuiltin.string": [
+            "support.type.string.sproto"
+          ],
+          "sprotoBuiltin.binary": [
+            "support.type.binary.sproto"
+          ],
+          "sprotoBuiltin.double": [
+            "support.type.double.sproto"
+          ],
+          "sprotoBuiltin.nil": [
+            "support.type.nil.sproto"
+          ],
+          "keyword.request": [
+            "keyword.control.request.sproto"
+          ],
+          "keyword.response": [
+            "keyword.control.response.sproto"
+          ],
+          "number.fieldTag": [
+            "constant.numeric.field-tag.sproto"
+          ],
+          "number.protocolTag": [
+            "constant.numeric.protocol-tag.sproto"
+          ],
+          "number.precision": [
+            "constant.numeric.precision.sproto"
+          ],
+          "sprotoPunctuation.typeMarker": [
+            "punctuation.definition.type.sproto"
+          ],
+          "sprotoPunctuation.typeSeparator": [
+            "punctuation.separator.type.sproto"
+          ],
+          "sprotoPunctuation.fieldSeparator": [
+            "punctuation.separator.field.sproto"
+          ],
+          "sprotoPunctuation.array": [
+            "keyword.operator.array.sproto"
+          ],
+          "sprotoPunctuation.braces": [
+            "punctuation.section.braces.sproto"
+          ],
+          "sprotoPunctuation.parentheses": [
+            "punctuation.section.parentheses.sproto"
+          ]
+        }
+      }
+    ],
+    "configurationDefaults": {
+      "[sproto]": {
+        "editor.semanticHighlighting.enabled": true
+      },
+      "editor.tokenColorCustomizations": {
+        "textMateRules": [
+          {
+            "scope": "source.sproto entity.name.type",
+            "settings": {
+              "foreground": "#2AA198"
+            }
+          },
+          {
+            "scope": "source.sproto variable.other.member",
+            "settings": {
+              "foreground": "#FFFFFF"
+            }
+          },
+          {
+            "scope": "source.sproto entity.name.function",
+            "settings": {
+              "foreground": "#DCDCAA"
+            }
+          },
+          {
+            "scope": "source.sproto support.type",
+            "settings": {
+              "foreground": "#569CD6"
+            }
+          }
+        ]
+      },
+      "editor.semanticTokenColorCustomizations": {
+        "rules": {
+          "sprotoType:sproto": "#2AA198",
+          "sprotoField:sproto": "#FFFFFF",
+          "sprotoProtocol:sproto": "#DCDCAA",
+          "sprotoBuiltin:sproto": "#569CD6"
+        }
+      }
+    },
+    "languages": [
+      {
+        "id": "sproto",
+        "aliases": [
+          "Sproto",
+          "sproto"
+        ],
+        "extensions": [
+          ".sproto"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "sproto",
+        "scopeName": "source.sproto",
+        "path": "./syntaxes/sproto.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "sproto",
+        "path": "./snippets/sproto.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "sproto.configureColors",
+        "title": "Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors"
+      },
+      {
+        "command": "sproto.openSettings",
+        "title": "Sproto: 打开设置 / Open Sproto Settings"
+      }
+    ],
+    "configuration": {
+      "title": "Sproto",
+      "properties": {
+        "sproto.colors.typeDeclaration": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 0,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "类型声明颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.typeReference": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 1,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "类型引用颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.fieldDeclaration": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 2,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "字段声明颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.fieldReference": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 3,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "字段引用 / 字典键颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.protocolDeclaration": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 4,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "协议方法声明颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.integer": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 5,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "integer 内置类型颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.boolean": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 6,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "boolean 内置类型颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.string": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 7,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "string 内置类型颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.binary": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 8,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "binary 内置类型颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.double": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 9,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "double 内置类型颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.nil": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 10,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "nil 内置类型颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.request": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 11,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "request 关键字颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.response": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 12,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "response 关键字颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.fieldTag": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 13,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "字段编号颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.protocolTag": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 14,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "协议编号颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.precision": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 15,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "小数精度颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.number": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 16,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "其他数字颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.comment": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 17,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "行注释颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.typeMarker": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 18,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "声明点号颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.typeSeparator": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 19,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "类型限定点号颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.fieldSeparator": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 20,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "字段冒号颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.array": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 21,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "数组星号颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.braces": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 22,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "大括号颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        },
+        "sproto.colors.parentheses": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "order": 23,
+          "pattern": "^$|^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+          "patternErrorMessage": "留空继承默认，或输入 #RRGGBB / #RRGGBBAA。",
+          "markdownDescription": "圆括号颜色 / Color. 留空继承编辑器原生配色 / Leave empty to inherit native colors; 输入十六进制颜色 / enter a hex color. 也可运行 **Sproto: 配置高亮颜色 / Configure Sproto Highlight Colors** 使用颜色选择器 / use the color picker."
+        }
+      }
+    }
+  }
+}

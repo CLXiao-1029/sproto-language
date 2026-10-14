@@ -1,0 +1,4606 @@
+# 协议包头
+.package {
+    type 1 : integer  # 协议类型
+    session 2 : integer  # 会话编号
+    time 3 : integer(3)  # 时间戳
+    error 4 : integer  # 错误码
+    random 5 : integer  # 随机数哈希
+    gold 6 : integer  # 金币检测
+}
+
+.KVIntBool {
+    key 1 : integer
+    val 2 : boolean
+}
+
+.KVIntInt {
+    key 1 : integer
+    val 2 : integer
+}
+
+.KVIntNum {
+    key 1 : integer
+    val 2 : integer(6)
+}
+
+.KVStrStr {
+    key 1 : string
+    val 2 : string
+}
+
+.KVStrInt {
+    key 1 : string
+    val 2 : integer
+}
+
+# 物品
+.Item {
+    type 1 : integer  # 物品类型
+    count 2 : integer(3)  # 物品数量
+}
+
+.Color {
+	r 1 : integer
+	g 2 : integer
+	b 3 : integer
+}
+
+.ColorText {
+	color 1 : Color
+	text 2 : string
+    index 3 : integer # 颜色索引 默认0
+}
+
+.GuildFlag {
+    .Layer {
+        resId 1 : integer
+	    color 2 : Color
+    }
+
+	bottom 1 : Layer
+	middle 2 : Layer
+	top    3 : Layer
+}
+
+.GuildMember {
+	userId 1 : integer 
+	name 2 : ColorText
+	role 3 : integer  # 角色 与配置表对应
+	power 4 : integer # 战力
+	contr 5 : integer # 贡献
+    joinTime 6 : integer # 加入时间
+    loginTime 7 : integer # 最后登录时间
+    avatar 8 : PlayerAvatar # 玩家头像
+    logoutTime 9 : integer # 最后登出时间
+}
+
+.GuildChatInfo {
+    userId 1 : integer
+    text 2 : string
+}
+
+.GuildTech {
+    id 1    : integer
+    level 2 : integer
+}
+
+.UserIdPair {
+    a 1 : integer
+    b 2 : integer
+}
+
+.GuildTechUpgradeResult {
+    tech 1 : GuildTech # 升级后的科技项
+    techPt 2 : Item # 扣减后的科技点
+}
+
+.GuildCommonShop {
+    .Goods {
+        id 1 : integer # guild_shop表配置id
+        itemIdx 2 : integer # 物品下标
+        discountIdx 3 : integer # 折扣下标 
+    }
+
+    refreshTi 1 : integer # 下一次刷新的时间戳
+    goodsList 2 : *Goods  # 商品列表
+}
+
+.GuildDungeon {
+    resetTime 1 : integer # 重置超时时间戳
+    totalDamage 2 : integer # 公会总伤害
+    playerCount 3 : integer # 参与此副本的玩家数量
+}
+
+.GuildEvent {
+    # type取值
+    # 1 入会申请
+    # 2 会员加入
+    # 3 会员退出
+    # 4 踢出会员
+    # 5 任命副会长
+    # 6 解任副会长
+    # 7 超时退出
+    # 8 会长变更
+    # 9 聊天
+    # 10 设置更新
+    # 11 入会请求被拒
+    # 12 成员属性更新
+    # 13 成员签到
+    # 14 科技项升级
+    # 15 普通商店更新
+    # 16 公会升级
+
+    # 注意： type = [2,9] 应追加至GuildData对应字段
+
+    type 1 : integer
+    time 2 : integer
+    
+    arg1 3 : GuildMember
+    arg2 4 : GuildMember
+    arg3 5 : integer # 退出公会的userId
+    arg4 6 : UserIdPair # a是发起踢出操作的userId b是目标userId
+    arg5 7 : UserIdPair # 同理
+    arg6 8 : UserIdPair # 同理
+    arg7 9 : integer # 超时退出的userId
+    arg8 10 : integer # 新会长的userId
+    arg9 11 : GuildChatInfo
+    arg10 12 : GuildData # 仅包含部分有效字段 从name到recruitInfo 
+    arg11 13 : integer # 拒绝玩家的公会id
+    arg12 14 : GuildMember
+    arg13 15 : GuildData # 仅level, items字段有效
+    arg14 16 : GuildTechUpgradeResult  # 见定义
+    arg15 17 : GuildCommonShop
+    arg16 18 : integer # 当时等级
+    arg17 19 : integer # 成员登录 userId
+    arg18 20 : integer # 成员登出 userId
+    arg19 21 : GuildDungeon # 跨周期重置后的公会副本存档
+    arg20 22 : integer # 更新后的 totalDamage
+    arg21 23 : integer # 更新后的 playerCount
+}
+
+.GuildData {
+	guildId 1 		: integer
+	name 2 			: ColorText
+	visualType 3 	: integer # 1公开 2隐藏 3需申请 
+	flag 4 			: GuildFlag # 旗帜
+	noticeInfo 5    : string # 公告信息 对内
+	recruitInfo 6   : string # 招募信息 对外
+	level 7         : integer # 公会等级
+	members 9       : *GuildMember # 成员列表
+	requests 10     : *GuildMember # 请求列表
+    chatInfos 11    : *GuildEvent # 聊天信息
+    sysInfos 12     : *GuildEvent # 系统信息
+    techs   14      : *GuildTech # 科技列表 仅包含level>0的项
+
+    # 物品列表 确定包含以下条目
+    #   公会经验(到下一级的 已积累的经验)
+    #   科技点
+    items   15      : *Item 
+
+    # 普通商店
+    commonShop 16 : GuildCommonShop 
+
+    power 17 : integer # 公会总战力 仅用于排行榜相关业务
+    honor 18 : integer # 公会总军功 公会战需求
+
+    dungeon 19 : GuildDungeon # 公会副本
+
+    dungeonDamage 20 : integer # 副本总伤害 仅用于副本排行榜相关的请求上下文
+}
+
+# 公会申请
+.GuildApplyJoin {
+    id 1 : integer  # 公会编号
+    name 2 : string  # 公会名字
+    time 3 : integer  # 申请时间
+}
+
+# GM数据
+.GMDataBody {
+    .GMTowerUnlock {
+        id 1 :integer # 炮台ID
+        lv 2 :integer # 炮台等级默认1
+        star 3 :integer # 炮台星级默认1
+        talentLv 4 :integer # 炮台天赋等级默认1
+    }
+    items 1 : *KVIntInt() # 物品添加key=id,val=count
+    towers 2 : *GMTowerUnlock(id) # 炮台解锁
+    pveId 3 : integer # 解锁关卡ID
+}
+
+# 副本战斗数据
+.DungeonBattleData {
+    id 1 : integer # 副本ID
+    diff 2: integer # 副本难度
+    result 3: boolean # 是否完全胜利
+    battleValue 4 : integer(6) # 战斗数值：击毁数量、收割程度、坚守时长、boss血量
+    battleTarget 5 : integer(6) # 战斗数值目标
+    titanList 6 : *integer # 泰坦列表
+    bossTurn 7 : integer # 挑战boss波数
+}
+
+.PlayerAvatar {
+    avatarId 1 : integer # 头像ID
+    borderId 2 : integer # 头像边框ID
+    badgeId 3 : integer # 称号ID
+    avatarTime 4 : integer # 限时到期时间戳
+    borderTime 5 : integer # 限时到期时间戳
+    badgeTime 6 : integer# 限时到期时间戳
+}
+
+.tWorldCup {
+    .SportsItem {
+        id 1 : string # 赛事ID
+        supportId 2 : string # 投注ID
+        supportCnt 3 : integer # 投注金额
+        flag 4 : boolean # 是否领取
+    }
+    .TaskItem {
+        id 1 : integer # 任务ID
+        count 2 : integer # 任务完成次数
+        index 3 : integer # 任务档位
+    }
+    unlockTimer 1 : integer # 世界杯功能解锁时间戳
+    # 离线挂机奖励（冠军之路）
+    offlineTimer 2 : integer # 选择主队后离线时间戳
+    # 赛事投注
+    sportsBetting 3 : *SportsItem(id) # 赛事投注 key = 赛事ID value = 投注金额
+    # 应援任务（每日任务&成就任务）
+    dailyMission 4 : *TaskItem(id) # 日常任务 key = 任务ID value = 完成次数
+    achieveMission 5 : *TaskItem(id) # 成就任务 key = 任务ID value = 完成次数
+    # 应援商店（代币兑换）
+    goodsItems 7 : *KVIntInt() # 商品物品 key = 已购买的商品ID value = 已购买的数量
+    # 活动签到
+    signInIndex 8 : integer # 签到索引
+    signInTime 9 : integer # 下次签到时间戳
+    # 确认主队
+    mainTeamId 10 : string # 主队ID
+    mainTeamTime 11 : integer # 主队确认时间戳
+}
+
+# "推箱子"大富翁
+.tMonopoly {
+    .Mission {
+        id 1 : integer # 任务ID
+        count 2 : integer # 累计计数
+        index 3 : integer # 任务档位
+    }
+    .Pass {
+        exp 1 : integer # 通行证经验
+        index 2 : integer # 通行证已领取的档位
+        ex_count 3 : integer # 通行证额外奖励领取次数
+        pay1 4 : boolean # 付费通行证支付
+    }
+
+    .Robot {
+        .Box {
+            id 1 : integer
+            boxId 2 : integer
+            colorIndex 3 : integer
+            index 4 : integer
+        } 
+        index 1 : integer
+        betAmount 2 : integer
+        sellBoxCount 3 : *KVIntInt()
+        boxRewards 4 : *Box(id)
+        turnProgress 5 : integer
+        exBoxRewards 6 : *KVIntInt()
+    }
+    .Shop {
+        .Page {
+            id 1 : integer
+            goodsList 2 : *KVIntInt()
+        }
+        level 1 : integer
+        pageList 2 : *Page(id)
+        costList 3 : *KVIntInt()
+    }
+    mission 1 : *Mission(id)
+    pass 2 : Pass
+    robot 3 : Robot
+    tokens 4 : *KVIntInt()
+    shop 5 : Shop
+    starTimestamp 6 : integer
+}
+
+#周年庆
+.tAnniversary {
+    .PassInfo {
+        count 1 : integer # 次数
+        index 2 : integer # 索引
+        purchased 3 : boolean # 是否已购买
+    }
+    .MissionItem {
+        id 1 : integer # 任务ID
+        count 2 : integer # 任务触发次数
+        index 3 : integer # 任务领取索引
+    }
+    .ExchangeInfo {
+        turn 1 : integer # 当前轮次
+        round 3 : integer # 轮次累计值
+        selects 2 : *KVIntInt() # key:组ID, value:选择的奖励序号(1/2/3)
+    }
+    .Throw {
+        times 1 : integer # 投掷次数
+        claimIndex 2 : integer # 投掷领取索引
+        multipleIndex 3 : integer # 倍数索引
+        effects 4 : *KVIntInt() # 投掷效果 key:value：进度ID
+        pos 5 : *integer # 当前棋子位置
+    }
+    pass 1 : PassInfo
+    mission 2 : *MissionItem(id)
+    customHero 3 : *KVIntInt()
+    shopGoods 4 : *KVIntInt()
+    exchange 5 : ExchangeInfo
+    throw 6 : Throw
+    startTime 7 : integer # 活动开启时间戳
+    chessboard 8 : *KVIntInt()
+}
+
+# 通行证任务
+.tPassportTask {
+    id 1 : integer # 任务id
+    progress 2 : integer # 任务进度
+    index 3 : integer # 索引
+    finish 4 : boolean # 是否完成
+}
+
+#通行证
+.tPassport {
+    id 1 : integer  # 通行证id
+    unlockPay1 2 : boolean # 解锁档位1
+    claimIndex 3 : integer # 领取索引 指目标等级
+    exp 4 : integer # 经验值
+    weekExpLimit 5 : integer # 周经验上限
+    level 6 : integer # 等级
+    nextWeekly 7 : integer # 下周时间
+    weeklyTask 8 : *tPassportTask(id) # 周任务列表
+    periodTask 9 : *tPassportTask(id) # 本期任务列表
+    unlockPay2 10 : boolean # 解锁档位2
+}
+
+#周年庆2
+.tAnniversary2 {
+    .tRebate {
+        reward 1 : *Item()
+        claimed 2 : *Item()
+    }
+    .tSign {
+        loginDays 1 : integer # 已登录自然日天数
+        lastDay 2 : integer # 上次登记的自然日零点时间戳
+        claimed 3 : integer # 已领取份数
+    }
+    pass 1 : tPassport
+    rebate 2 : tRebate
+    goldsmith 3 : *KVIntInt() # 点金手 key：池子ID value：已领取档位默认1
+    pilots 4 : *KVIntInt() # 驾驶员 key：驾驶员礼包ID value：购买次数
+    gems 5 : *KVIntInt() # 钻石 key：池子ID value：已领取档位默认1
+    titanPack 6 : *KVIntInt()
+    sign 7 : tSign # 签到
+}
+
+# 玩家数据
+.UserData {
+    # 基础信息
+    .Basic {
+        appVersion 1 : string  # 应用版本号
+        dataVersion 2 : integer  # 数据版本号
+        updateVersion 3 : integer  # 更新版本号
+        utcOffset 4 : integer  # UTC时差(秒)
+
+        id 10 : integer  # 编号
+        name 11 : string  # 名字
+        lang 12 : string  # 语言
+        uniqueID 13 : string # 唯一标示
+        level 14 : integer # 账号等级
+        exp 15 : integer # 账号经验
+        headId 16 : integer # 头像ID
+        changeNameCnt 17 : integer # 修改名字次数
+        colorIndex 18 : integer # 颜色索引
+
+        bornTime 20 : integer  # 创建时间
+        loginTime 21 : integer  # 登录时间
+        crossDayTime 22 : integer  # 跨天时间
+        elapsedTime 23 :integer # 游戏流逝时间
+        avatar 24 : PlayerAvatar # 头像信息
+
+        randomSeed 30 : integer  # 随机种子
+        
+        genId 31 : integer #genId发生器，生成的genId自加1
+        haveBindAcct 32 : boolean  # 是否已经绑定帐号
+        
+        showAdCnt 40 :integer # 观看广告次数
+        beExtantCnt 41:integer # 留存次数
+
+        # 订阅打点
+        subscribe 50 : *KVStrInt()
+        localData 51 : *KVStrInt() # 本地数据
+    }
+
+    # 新手引导
+    .Tutorial {
+        id 1 : integer # 引导id
+        stage 2 : integer # 当前引导阶段
+        finish 3 : boolean # 引导是否结束
+        times 4 : integer # 引导次数
+        giftTimes 5 : integer # 引导赠送次数
+    }
+
+    # 充值
+    .Iap {
+        # 已购商品
+        .PurchasedProduct {
+            productId 1 : string  # 商品编号
+            purchaseTime 2 : integer  # 最后一次购买时间
+            purchaseCount 3 : integer  # 周期内已经购买次数
+        }
+
+        totalRecharge 1 : integer(3)  # 累计充值金额
+        dailyRecharge 2 : integer(3)  # 当日充值金额
+        seasonRecharge 3 : integer(3)  # 赛季充值金额
+        purchaseAllCount 4 : integer  # 累计支付次数
+        totalClaimReward 5 : integer  # 累计充值金额领取奖励的
+
+        pendingOrders 11 : *KVStrInt()  # 未确认订单,key:第三方ID，val:IAP配置ID
+        purchasedProducts 12 : *PurchasedProduct(productId)  # 已购商品列表
+
+        issueOrders 13 : *KVStrInt()  # 自动补单失败的问题订单 key:第三方ID，val:IAP配置ID
+    }
+
+    # 邮件
+    .Mail {
+        mailId 1 : integer  # 邮件编号
+        userId 2 : integer  # 玩家编号
+
+        startTime 3 : integer  # 开始时间
+        expireTime 4 : integer  # 过期时间
+
+        title 5 : string  # 邮件标题
+        body 6 : string  # 邮件内容
+
+        titleLoc 7 : *string  # 本地化标题
+        bodyLoc 8 : *string  # 本地化内容
+
+        itemList 9 : *Item  # 物品列表
+        status 10 : integer  # 邮件状态 详情见Shared/Enum/MailStatus.lua
+
+        appVersion 11 : string  # 游戏版本
+
+        url 12 : string # 跳转链接 (注意判nil 以及空字符串)
+
+        titleDict 13 : *KVStrStr() # gm后台发出的 原始本地化标题字典
+        bodyDict 14  :*KVStrStr() # gm后台发出的 原始本地化正文字典
+    }
+
+    # 兑换码
+    .CDKey {
+        .KVStrItemList {
+            cdkey 1 : string
+            itemList 2 : *Item
+        }
+        pendingKeys 1 : *KVStrItemList()  # 未领取的兑换码
+    }
+
+    # 离线
+    .Offline {
+        offlineTime 1 : integer  # 离线时间
+        elapsedTime 2 : integer  # 离线时长
+    }
+
+    # 塔
+    .Tower {
+        id 1 : integer  # 炮台ID
+        sn 2 : integer  # 炮台序列号
+        star 3 : integer # 炮台星级
+        pos 4 : integer  # 炮台位置
+        lock 5 : boolean  # 炮台锁定状态，上锁后不能被合并
+    }
+
+    # 等级信息
+    .LevelInfo {
+        id 1 : integer  # 炮台ID
+        lv 2 : integer  # 炮台等级
+        reformHp 3 : integer(6)  # 当前阶段改造的炮台生命值
+        reformDmg 4 : integer(6)  # 当前阶段改造的炮台伤害值
+        reformShield 5 : integer(6)  # 当前阶段改造的炮台护甲值
+        talents 6 : *KVIntInt()  # 炮台已解锁天赋<编号,等级>
+        reforms 7 : *KVIntInt()  # 炮台改造<阶段,次数,保底次数>
+    }
+
+    # 阵容
+    .Formation {
+        id 1 : integer  # 阵容编号
+        towers 2 : *KVIntInt()  # 炮台列表
+        titans 3 : *KVIntInt()  # 泰坦列表
+    }
+
+    .WorldProduct {
+        id 1 : integer  # 物品ID
+        time 2 : integer  # 物品领取时间戳
+        remainCount 3 : integer(3)  # 物品剩余数量
+        index 4 : integer #产品下标
+    }
+
+    .WorldChapter {
+        id 1 : integer  # 章节ID
+        star 2 : integer  # 章节星级
+        smallStatus 3 : *boolean # 小关卡通关状态
+        bigStar 4 : integer  # 大关卡星级
+    }
+
+    .WorldBubble {
+        pos 1 : integer  # 气泡位置
+        rewardItem 2 : Item # 气泡奖励
+        endTime 3 : integer  # 气泡结束时间
+    }
+
+    .WorldEvent {
+        pos 1 : integer  # 事件位置
+        type 2 : integer # 事件类型
+        rewards 3 : *Item # 事件奖励列表
+        endTime 4 : integer  # 事件结束时间
+        enemyUid 5 : integer # 敌人userId
+        nameId 6 : integer # 敌人名字id
+    }
+
+    .World {
+        chapters 1 : *WorldChapter(id) # 章节列表
+        rewardIndex 2 : integer  # 奖励领取星级
+        products 3 : *WorldProduct  # 产出列表
+        buffStar 4 : integer  # buff激活星数
+        accelerateTimes 5 : integer  # 加速生产剩余次数
+        accelerateAdTimes 6 : integer  # 加速生产剩余广告次数
+        receiveTime 7 : integer  # 产出领取时间
+        questLevel 8 : integer  # 委托等级
+        bubbleList 9 : *WorldBubble # 气泡列表
+        bubbleNextTime 10 : integer # 气泡下次生成时间
+        eventList 11 : *WorldEvent # 事件列表
+        eventNextTime 12 : integer # 事件下次生成时间
+        pvpTimes 13 : integer # PVP次数
+        vipAccelerateTimes 14 : integer # 广告加速次数
+    }
+
+    # 双倍回收机
+    .DoubleRecycle {
+        list 1 : *integer # 回收列表
+        adTime 2 : integer # 下次广告时间
+    }
+
+    #主线
+    .Pve {
+        id 1 : integer # 当前关卡ID
+        clear 2 : boolean # 当前是否通关
+        dayFailTimes 3 : integer # 每日失败次数
+        doubleRecycle 4 : DoubleRecycle # 主线双倍回收机
+        victoryTimes 5 : integer # 连胜次数
+        victoryRate 6 : integer(3) # 连胜增幅值
+        chapterPack 7 : integer # 当前章节礼包id
+        chapterPackClear 8 : boolean # 章节礼包是否清空
+        is_perfect 9 : boolean # 是否 Perfect
+        chapterPackList 10 : *KVIntBool() #章节礼包购买状态
+    }
+
+    # 副本
+    .Dungeon {
+        id 1 : integer # 副本ID
+        adCount 2 : integer # 广告次数
+        refreshTime 3 : integer # 刷新时间
+        score 4 : integer # 分数
+        unlockDiff 5 : integer # 难度状态
+        selectDiff 6 : integer # 当前难度
+        rewardsStatus 7 : *boolean # 奖励领取状态
+        dayFree 8 : integer # 每日免费使用次数
+        recordTitans 9 : *integer # 记录的挑战泰坦
+        recordDiff 10 : integer # 记录的挑战难度
+        bossTurn 11 : integer # 挑战boss波次
+     }
+
+    # 要塞装备、技能穿戴孔
+    .Fortress {
+        equipSlots 1 : *KVIntInt()
+        skillSlots 2 : *KVIntInt()
+    }
+
+    # 要塞装备
+    .FortressEquip {
+        id 1 : integer
+        sn 2 : integer
+        lv 3 : integer
+        rare 4 : integer
+        using 5 : boolean
+    }
+
+    # 要塞技能
+    .FortressSkill {
+        id 1 : integer
+        sn 2 : integer
+        rare 3 : integer
+        slot 4 : integer
+    }
+
+    # 商店 常规商品购买记录
+    .GoodsRecord {
+        id 1 : integer
+        adTi 2 : integer
+        adCnt 3 : integer
+        freeCnt 4 : integer
+        buyCnt 5 : integer
+    }
+
+    # 商店 扭蛋机购买记录
+    .GachaRecord {
+        id 1 : integer
+        adTi 2 : integer
+        adCnt 3 : integer
+        bd10Cnt 4 : integer
+        bd100Cnt 5 : integer
+        buyCnt 6 : integer
+        trialState 7 : integer
+    }
+
+    # 事件存档
+    .EventArchive {
+        id 1 : integer # 事件id
+        data 2 : *KVIntInt() # 事件数据
+    }
+
+    .MissionMain {
+        id 1 : integer # 当前所在主线id
+        data 2 : *KVIntInt() # 事件数据
+        clear 3 : boolean # 主线任务通关
+    }
+    
+
+    .MissionDailyItem {
+        id 1 : integer # 任务id
+        progress 2 : integer # 任务进度
+        isReceived 3 : boolean # 是否领取任务奖励
+    }
+
+    .MissionDaily {
+        missionList 1 : *MissionDailyItem(id) # 任务列表
+        isReceived 2 : boolean # 是否领取每日委托奖励
+        dayLevel 3 : integer # 当日任务委托等级
+        completeTimes 4 : integer # 每日任务完成次数
+    }
+
+    .Mission {
+        main 1 : MissionMain # 主线
+        daily 2 : MissionDaily # 日常任务
+    }
+
+    .LibraryMission {
+        id 1 : integer # 任务id
+        curId 2 : integer # 当前任务id
+        rewardIndex 3 : integer # 奖励领取位置
+    }
+
+    .LibraryResearch {
+        index 1 : integer # 索引
+        researchId 2 : integer # 研究蓝图id
+        researchEndTime 3 : integer # 研究结束时间
+        isAdAccelerate 4 : boolean # 是否使用广告加速
+    }
+
+    .Library {
+        missions 1 : *LibraryMission(id) # 档案列表
+        researchId 2 : integer # 当前研究蓝图id
+        researchEndTime 3 : integer # 研究结束时间
+        bpCompleteList 4 : *KVIntInt() # 研究完成的蓝图列表
+        isAdAccelerate 5 : boolean # 是否使用广告加速
+        researchList 6 : *LibraryResearch(index) # 研究列表
+    }
+
+    # 月卡
+    .MonthCard {
+        id 1 : integer # 月卡id
+        status 2 : integer # 状态 0：未购买 1：已购买 2：已领取
+        endTime 3 : integer # 结束时间
+        claimTime 4 : integer # 领取时间
+    }
+
+    # 首充礼包
+    .FirstPayGift {
+        unlockTime 1 : integer # 开始时间
+        buyTime 2 : integer # 购买时间，没有购买的值为nil
+        # endTime 2 : integer # 结束时间，没有购买的结束时间，如果已经购买值等于-1
+        claimTimes 3 : *KVIntInt() # 领取时间
+        status 4 : *KVIntInt() # 奖励状态 key:奖励天数，val:状态 -1 or nil:没有解锁 0：解锁未领取 1：已领取
+        giftId 5 : integer # 首充礼包id
+    }
+
+    .WelfareMission {
+        id 1 : integer # 任务id
+        curId 2 : integer # 当前任务id
+        rewardIndex 3 : integer # 奖励领取位置
+    }
+
+    .PassData {
+        type 1 : integer # 通行证类型
+        freeList 2 : *KVIntInt() # 免费奖励状态
+        buyList 3 : *KVIntInt() # 购买奖励状态
+    }
+
+    .Welfare {
+        missions 1 : *WelfareMission(id) # 福利列表
+        passes 2 : *PassData(type) # 通行证数据
+    }
+
+    # 触发礼包物品
+    .TriggerItem {
+        id 1 : integer # 触发id
+        status 2 : integer # 状态 0：未购买 1：已购买
+        startTime 3 : integer # 开始时间
+    }
+
+    # Discord
+    .Discord {
+        code 1 : string # 兑换码
+        openCnt 2 : integer # 界面开启次数
+    }
+    
+    # 公会
+    .Guild {
+        applyJoinReqs 1 : *GuildApplyJoin(id) # 申请加入列表
+        signInStates 2 : *KVIntInt() # 签到状态
+        items 3 : *Item() # 资源列表
+        goodsList 4 : *KVIntInt() # 商品列表
+        commonShopTime 5 : integer # 普通商店刷新时间
+        dungeon 6 : GuildDungeon # 副本数据
+        dungeonDmg 7 : integer # 副本伤害记录
+        dungeonActive 8 : *KVIntInt() # 副本活跃奖励领取状态
+        viewChatTime 9 : integer # 查看聊天记录时间
+    }
+
+    #公会战商店
+    .GuildBattleShop {
+        id 1 : integer # 商店id 同赛季重置
+        exp 2 : integer # 消耗累计 同赛季重置
+        level 3 : integer # 等级 同赛季重置
+        goodsList 4 : *KVIntInt() # 商品购买列表 商品ID，购买次数
+    }
+
+    .GVGTitleGift {
+        id 1 : integer # 礼包id
+        free 2 : boolean # 免费状态
+        pay 3 : boolean # 付费状态
+        endTime 4 : integer # 结束时间
+        isActive 5 : boolean # 是否激活
+    }
+
+    .GVGSupplyGift {
+        id 1 : integer # 礼包id
+        times 2 : integer # 购买次数
+        refreshTime 3 : integer # 刷新时间
+    }
+    
+    #公会战
+    .GuildBattle {
+        honorAdTimes 1 : integer # 军令广告次数
+        honorPayTimes 2 : integer # 军令购买次数
+        honorTime 3 : integer # 军令回复时间戳
+        lastSeason 4 : integer # 上赛季id
+        titleRewards 5 : *KVIntBool() # 军衔奖励领取状态
+        mainMission 6 : MissionMain # 主线任务
+        seasonMissions 7 : *GuildMission(id) # 赛季任务列表
+        passUnlockPay 8 : boolean # 通行证解锁付费
+        passClaimDay 9 : integer # 通行证领取天数
+        cardEndTime 10 : integer # 晋升卡结束时间
+        freeDailyReward 11 : boolean # 免费日常奖励是否领取
+        payLimitTimes 12 : *KVIntInt() # 付费道具购买次数 商品ID，购买次数
+        cardDailyReward 13 : boolean # 付费日常奖励是否领取
+        titleGifts 14 : *GVGTitleGift(id) # 军衔礼包
+        supplyGifts 15 : *GVGSupplyGift(id) # 补给礼包
+    }
+
+    .GuildMission {
+        id 1 : integer # 任务id
+        curId 2 : integer # 当前任务id
+        isClear 3 : boolean # 完成所有阶段
+        progress 4 : integer # 本赛季任务进度
+    }
+
+    # 编辑买塔
+    .EditBuyTower {
+        level 1 : integer # 买塔等级
+        count 2 : integer # 买塔次数
+        selectedStar 3 : integer # 选中星星
+    }
+    # 精英商品
+    .EliteShop {
+        goods 1 : *KVIntInt() # 商品列表
+        purchased 2 : *integer # 已购买次数
+        expired 3 : *integer # 精英商品已经过期
+        currExpired 4 : integer # 当前已经过期
+        nextRoundTime 5 : integer # 下一回合时间
+    }
+
+    # 周期礼包
+    .CycleGift {
+        .ItemIndex {
+            id 1 : integer # 礼包ID
+            selectIndex 2 : *KVIntInt() # 索引列表，key 索引,val:选中索引
+        }
+        payDays 1 : integer # 本月累充天数
+        receiveIndex 2 : integer # 当前领取位置
+        giftStatus 3 : *KVIntInt() # 礼包购买状态，key:礼包id，val:购买次数
+        dayRefreshTime 4 : integer # 每日刷新时间
+        weekRefreshTime 5 : integer # 周刷新时间
+        monthRefreshTime 6 : integer # 月刷新时间
+        payAddTime 7 : integer # 下次累积充值时间
+        selectIndex 8 : *ItemIndex(id) # 礼包选中索引
+    }
+
+    # 基金商店
+    .Fund {
+        .Shop {
+            id 1 : integer # 商店id
+            purchase 2 : integer # 购买状态（异或）,1, 2, 4, 8
+            claimIndex 3 : integer # 领取位置
+        }
+        shop 1 : *Shop(id)
+    }
+
+    # 泰坦
+    .TitanItem {
+        id 1 : integer # 泰坦id
+        level 2 : integer # 等级
+        attrs 3 : *KVIntInt() # 属性列表,key:id,val:level
+        skills 4 : *KVIntInt() # 技能等级,key:id,val:level
+        pos 5 : integer # 位置
+    }
+
+    # 泰坦礼包商店
+    .TitanShop {
+        id 1 : integer # 商店id
+        goodsList 2 : *KVIntInt() # 商品购买列表 商品ID，购买次数
+        time 3 : integer # 刷新时间
+    }
+    
+    # 泰坦试用
+    .TitanTry {
+        id 1 : integer # 商店id
+        try_award 2 : integer # 试炼奖励领取状态
+        try_times 3 : integer # 试炼次数
+    }
+
+    # 签到
+    .SignIn {
+        firstIndex 1 : integer # 首次登录奖励领取索引
+        index 2 : integer # 签到索引
+        time 3 : integer # 签到时间
+    }
+
+    # 活动
+    .Activity {
+        onlineTimeElapsed 1 : integer # 在线时长
+        onlineClaimIndex 2 : integer # 在线时长奖励领取索引
+        onlineTimeDay 3 : integer # 在线时长天数索引
+        signIn10Index 4 : integer # 千抽狂欢奖励领取索引
+        signIn10Time 5 : integer # 千抽狂欢上次奖励签到时间
+    }
+
+    # 定向礼包
+    .TargetPack {
+        .PackItem {
+            id 1 : integer # 礼包ID
+            level 2 : integer # 等级
+            count 3 : integer # 数量
+            time 4 : integer # 刷新时间
+            fragmentId 5 : integer # 碎片ID
+            iapId 6 : integer # IAP商品ID
+            type 7 : integer # 商品类型
+            times 8 : integer # 购买次数
+            paying 9 : boolean # 付款中
+        }
+        .TowerItem {
+            id 1 : integer # 礼包ID
+            packItems 2 : *PackItem(id)
+        }
+        towerPacks 1 : *TowerItem(id) # 炮塔直升礼包
+        packItems 2 : *PackItem(id) # 其他已经购买礼包列表
+        recordPays 3 : *KVIntInt()
+    }
+
+    # 运营活动
+    .IgeActivity {
+        .Page {
+            id 1 : integer
+            level 2 : integer
+            index 3 : integer 
+            taskIndex 4 : integer
+            payUnlock 5 : boolean
+            items 6 : *KVIntInt()
+            missions 7 : *MissionDailyItem(id) # 任务列表
+        }
+        beginTime 1 : integer
+        endTime 2 : integer
+        coin 3 : integer
+        activity 4 : *IgeActivity.Page(id)
+
+        ige1 101 : Page
+        ige2 102 : Page
+        ige3 103 : Page
+        ige4 104 : Page
+        ige5 105 : Page
+        ige6 106 : Page
+        ige7 107 : Page
+        ige8 108 : Page
+    }
+
+    # 福利-7日任务
+    .Turn7Mission {
+        .DailyItem {
+            .MissionItem {
+                id 1 : integer # 任务ID
+                progress 2 : integer
+                isFinished 3 : boolean
+            }
+            index 1 : integer # 第几天索引
+            id 2 : integer # 任务ID
+            unlockTime 3 : integer # 解锁时间
+            rewardList 4 : *KVIntInt() # 奖励领取列表,key:id,val:次数
+            missionList 5 : *MissionItem(id) # 任务领取列表
+        }
+        turnNum 1 : integer # 第几轮
+        openTime 2 : integer # 开启时间
+        progress 3 : integer # 进度
+        dailyList 4 : *DailyItem(index) # 7日任务列表
+        progressList 5 : *integer # 任务奖励进度列表
+    }
+
+    # 会员
+    .Vip {
+        level 1 : integer # 会员等级
+        exp 2 : integer # 会员经验
+        firstRewards 3 : *KVIntBool() # 会员第一次奖励
+        dailyRewards 4 : *KVIntInt() # 日常奖励
+    }
+
+    # 黑市（每日商店）
+    .DailyShop {
+        id 1 : integer # 商店格子ID
+        goodsIndex 2 : integer # 商品索引
+        discountIdx 3 : integer # 折扣索引
+        times 4 : integer # 购买次数
+    }
+
+    # 资源战争
+    .ResourceWar {
+        seasonEndTime 1 : integer # 赛季结束时间 也用作赛季id
+        ticketRefreshTime 2 : integer # 挑战票刷新时间
+        receivePointTime 3 : integer # 领取积分时间
+        shopItems 4 : *KVIntInt() # 商品列表
+        shopRefreshTime 5 : integer # 商品刷新时间
+        ticketBuyItems 6 : *KVIntInt() # 挑战票购买商品列表
+        shopEverItems 7 : *KVIntInt() # 商品永久商品
+    }
+    
+    .AvatarMissionItem {
+        id 1 : integer # 任务id
+        progress 2 : integer 
+    }
+
+    .AvatarData {
+        # 头像称号到期时间
+        limits 1 : *KVIntInt()  # 限时头到期时间(key:id,val:到期时间)
+        receiveList 2 : *KVIntInt()  # 已领取列表(key:id,val:1)
+    }
+    # 安全箱
+    .SafeBox {
+        id 1 : integer # 安全箱id
+        value 2 : integer # 价值
+        lock 3 : boolean # 是否锁定
+        unlockTime 4 : integer # 解锁时间
+    }
+
+    # 世界boss奖励
+    .WorldBossReward {
+        id 1 : integer # 世界bossId
+        items 2 : *KVIntInt() # 奖励领取列表
+    }
+
+    # 世界boss
+    .WorldBoss {
+        seasonId 1 : integer # 赛季id 也是当前赛季结束时间
+        rewards 2 : *WorldBossReward(id) # 奖励领取列表
+        battleTimes 3 : integer # 剩余战斗次数
+        unsettledDict 4 : *KVIntInt()
+    }
+
+    # 驾驶员
+    .PilotItem {
+        id 1 : integer # 驾驶员ID
+        level 2 : integer # 等级
+        bind 3 : integer # 绑定的泰坦ID
+    }
+
+    #混沌战争
+    .ChaosWar {
+        energyAdTimes 1 : integer # 军令广告次数
+        energyPayTimes 2 : integer # 军令购买次数
+        energyTime 3 : integer # 军令回复时间戳
+        shopItems 5 : *KVIntInt() # 商品购买列表
+        lastSeason 6 : integer # 上赛季id
+        passList 7 : *KVIntBool() # 通行证领取列表
+        passPayList 8 : *KVIntBool() # 通行证付费领取列表
+        passUnlockPay 9 : boolean # 通行证是否付费解锁
+        payVip  10 : boolean # 购买典藏卡
+        vipDailyEnergy 11 : boolean # 典藏卡每日体力领取状态
+        titleRewards 12 : *KVIntBool() # 军衔奖励领取状态
+        shopEverItems 13 : *KVIntInt() # 商品永久商品
+    }
+
+    # UVA
+    .UVAItem {
+        id 1 : integer # UVA ID
+        noAd 2 : boolean # 是否无广告
+        noReward 3 : boolean # 是否无奖励
+    }
+
+    # 事件包
+    .EventPack {
+        .PackItem {
+            id 1 : integer # 礼包ID
+            index 2 : integer # 已经买的档位
+            openTime 3 : integer # 开启时间
+            eventTimes 4 : integer # 事件次数
+        }
+        packItems 1 : *PackItem(id)
+        activatedId 2 : integer # 激活的包ID
+    }
+
+    # 折扣礼包
+    .DiscountPack {
+        .PackItem {
+            index 1 : integer # 已经刷新次数
+            period 2 : integer # 当前生效的周期
+            endTime 3 : integer # 当前生效的周期结束时间
+            purchases 4 : *KVIntInt() # 已经采购的列表
+        }
+        .ItemIndex {
+            id 1 : integer # 礼包ID
+            selectIndex 2 : *KVIntInt() # 索引列表，key 索引,val:选中索引
+        }
+        unlockTime 1 : integer # 折扣礼包解锁时间
+        towerPackItem 2 : PackItem # 折扣礼包
+        titanPackItem 3 : PackItem
+        chooseItemIndex 8 : *ItemIndex(id) # 自选礼包中的索引
+        choosePackItem 9 : PackItem # 自选礼包
+        privilegePackItem 10 : PackItem
+    }
+
+    .ColSign {
+        index 1 : integer # 签到索引
+        dices 2 : *KVIntInt() # 骰子列表
+        signTime 3 : integer # 签到时间
+        unlockTime 4 : integer # 解锁时间
+        unlockSprint 5 : integer # 池子ID
+        expiredTime 6 : integer # 签到过期时间
+        diceRollRate 7 : integer
+        usedDices 8 : *KVIntInt()
+    }
+
+    basic 1 : Basic  # 基础信息
+    resources 2 : *Item()  # 资源列表
+    
+    tutorial 10 : *Tutorial(id)  # 新手引导
+    tutorialWait 11 : *integer # 新手引导等待列表
+
+    iap 20 : Iap  # 充值
+    cdkey 21 : CDKey  # 兑换码
+    offline 32 : Offline  # 离线奖励
+    
+    towers 40 : *Tower(sn)  # 炮台列表
+    towerLevels 41 : *LevelInfo(id)  # 炮台信息
+    buyTowerStar 42 : integer  # 购买炮台星级
+    gridUnlockCount 43 : integer  # 炮台格子数
+    fortressGridUnlock 44 : *integer  # 要塞格子已解锁的ID列表
+    unlockTowerId 45 : integer  # 炮台解锁编号
+
+
+    formationId 46 : integer  # 阵型编号
+    formations 47 : *Formation(id)  # 阵型
+
+    unlockTowerIdBuyCnt 48 : integer  # 炮台解锁购买次数
+    towerGroupUnlock 49 : integer  # 炮台联动效果激活状态
+    towerGroupClaimed 50 : integer  # 炮台联动效果领取状态
+    buyTowerInfo 51 : EditBuyTower  # 编辑购买炮塔信息
+    fortressUnlockIds 52 : *integer  # 要塞已解锁的ID列表
+    fortressGoodsList 53 : *KVIntInt() # 要塞商品列表
+    superGridUnlockIds 54 : *integer # 要塞万能格子已解锁的ID列表
+
+
+    world 55 : World  # 世界系统
+
+    pve 60 : Pve  # 主线系统
+
+    # 副本
+	dungeons 65 : *Dungeon(id) # 副本系统
+
+
+    # 要塞装备、技能孔
+    fortress 70 : Fortress
+
+    # 要塞装备列表
+    fortressEquips 71 : *FortressEquip(sn)
+
+    # 要塞技能列表
+    fortressSkills 72 : *FortressSkill(sn)
+    
+    # 要塞编号
+    fortressId 73 : integer
+
+    # 商店
+    goodsRecords 74 : *GoodsRecord(id)
+    gachaRecords 75 : *GachaRecord(id)
+    dailyShop 76 : *DailyShop(id)
+
+    # 事件存档
+    eventArchives 80 : *EventArchive(id)
+
+    # 主线
+    mission 90 : Mission
+
+    # 档案馆
+    library 101 : Library
+
+    # 月卡
+    monthCards 110 : *MonthCard(id)
+    freeMonthClaim 111 : boolean # 是否领取免费月卡
+    freeMonthTime 112 : integer # 领取免费月卡时间
+
+    # 首充
+    firstPayGift 115 : FirstPayGift
+    firstPayGiftIds 116 : *KVIntInt() # 首充礼包购买记录,key:礼包id,val:购买次数
+
+    # 福利
+    welfare 120 : Welfare
+
+    # 泰坦
+    titans 125 : *TitanItem(id)
+    titanShops 126 : *TitanShop(id)
+    titanTrys 127 : *TitanTry(id)
+
+    # 精英商品
+    eliteGoods 131 : *KVIntInt()  # 已解锁的精英商品<商品id,开始时间>
+    # 已购买的精英商品
+    eliteGoodsBuy 132 : *integer # 已购买的精英商品物品id
+    fixedPurchases 133 : *integer  # 固定购买指定炮台ID队列，新的插到后面，永远移除第一个
+    eliteShop 134 : EliteShop # 精英商品商店
+
+
+    # 系统天赋
+    systemTalents 140 : *KVIntInt()
+
+    # 触发礼包
+    triggerItems 150 : *TriggerItem(id)
+
+    # Discord
+    discord 151 : Discord
+    # 公会
+    guild 160 : Guild
+    # 公会战商店
+    guildBattleShop 161 : GuildBattleShop
+
+    guildBattle 162 : GuildBattle
+    # 通行证
+    passport 170 : tPassport
+    
+    # 基金商店
+    fund 175 : Fund
+    
+    # 周期礼包
+    cycleGift 180 : CycleGift
+
+    # 签到
+    signIn 185 : SignIn
+
+    # 活动
+    activity 190 : Activity 
+
+    # 定向礼包
+    targetPack 195 : TargetPack
+
+    # 运营活动
+    igeData 196: IgeActivity
+
+    # 福利-7日任务
+    turnMission 200 : Turn7Mission
+
+    # VIP
+    vip 210 : Vip
+
+    # 安全箱
+    safeBoxGold 211 : SafeBox
+
+    # 驾驶员
+    pilots 215 : *PilotItem(id)
+
+    # 资源战争
+    resourceWar 220 : ResourceWar
+    
+    # 头像称号数据
+    avatarData 230 : AvatarData
+
+    # 世界boss
+    worldBoss 231 : WorldBoss
+
+    # 混沌战争
+    chaosWar 232 : ChaosWar
+
+    # UVA
+    uva 240 : *UVAItem(id)
+
+    # 折扣礼包
+    discountPack 245 : DiscountPack
+
+    # 事件包
+    eventPack 250 : EventPack
+
+    # 签到
+    colSign 260 : ColSign
+
+    # 世界杯
+    worldCup 261 : tWorldCup
+
+    # "推箱子"大富翁
+    monopoly 262 : tMonopoly
+
+    # 周年庆
+    anniversary 263 : tAnniversary
+    # 周年庆2
+    znq 264 : tAnniversary2
+}
+
+# 异常信息
+NotifyOops 101 {
+    request {
+        message 1 : string  # 异常信息
+    }
+}
+
+# 错误反馈
+NotifyError 102 {
+    request {
+        type 1 : integer  # 协议类型
+        session 2 : integer  # 会话编号
+        error 3 : integer  # 错误码
+    }
+}
+
+# 心跳检测
+Ping 110 {
+    request { }
+    response { }
+}
+
+# 版本检测
+CheckVersion 111 {
+    request {
+        dataVersion 1 : string  # 配置数据版本
+    }
+    response { }
+}
+
+# 调试命令
+DebugCmd 112 {
+    request {
+        name 1 : string  # 命令名
+        params 2 : string  # 参数(json)
+    }
+}
+
+# 同步时间
+SyncTime 1000 {
+    request { }
+    response { }
+}
+
+Create 1001 {
+    request {
+        channel 2 : string  # 帐号渠道
+        openId 3 : string  # 帐号编号
+    }
+    response { }
+}
+
+# 登录帐号
+Login 1002 {
+    request {
+        serverId 1 : integer  # 服务器编号
+        channel 2 : string  # 帐号渠道
+        openId 3 : string  # 帐号编号
+        userId 4 : integer  # 玩家编号
+
+        platform 10 : string  # 游戏平台
+        appInfo 11 : string  # 应用信息(json)
+        abCaseCol 12 : *string  # AB测试规则列表
+
+        devId 13 : string # 设备id
+    }
+    response {
+        userId 1 : integer  # 玩家编号
+        banTime 2 : integer  # 封禁时间
+        banReason 3 : string   # 封禁原因
+
+        born 10 : boolean  # 新建玩家
+        userData 11 : UserData   # 玩家数据
+
+        abCaseCol 20 : *string  # AB测试规则列表
+        abConfig 21 : string  # AB测试配置(json)
+
+        commitId 30 : string # Shared_Data提交号
+
+        newDevice 31 : boolean # 是否为新设备
+        guildId 32 : integer # 公会id 需判空
+
+        isWarBlackUser 33 : boolean # 是否war黑名单用户
+    }
+}
+
+# 退出帐号
+Logout 1003 {
+    request { }
+}
+
+# 踢出玩家
+NotifyKick 1004 {
+    request {
+        message 1 : string  # 原因说明
+    }
+}
+
+# 聊天发言
+# 由前端调用
+ChatSay 1005 {
+    request {
+        # 频道
+        # 1 世界
+        # 2 公会招募
+        channel 1 : integer
+
+        # 聊天文本
+        text 2 : string
+    }
+}
+
+# 聊天推送
+.sChatMessage {
+
+    # 发言时间
+    time 1 : integer
+
+    # 频道
+    # 1 世界
+    # 2 公会招募
+    channel 2 : integer
+
+    # 玩家、公会信息
+    player 3 : sWarPlayer # name, avatar
+    guild 4 : GuildData # name, flag, guildId
+    
+    # 发言文本
+    text 5 : string 
+}
+
+ChatPushMessage 1006 {
+    request {
+        msg 1 : sChatMessage
+    }
+}
+
+# 拉取历史聊天消息
+ChatPullMessages 1007 {
+    request {
+    }
+    response {
+        msgs 1 : *sChatMessage # 聊天消息数组 前端显示时 应注意区分频道
+    }
+}
+
+# 跑马灯通知
+.sFloatNoticeLangText {
+    lang 1 : string # 语种代码
+    text 2 : string # 通知文本
+}
+
+NotifyFloatNotice 1008 {
+    request {
+        loop 1 : integer # 循环显示次数
+        texts 2 : *sFloatNoticeLangText # 通知文本数组
+    }
+}
+
+# 绑定帐号
+BindAccount 1010 {
+    request {
+        channel 1 : string  # 帐号渠道
+        openId 2 : string  # 帐号编号
+    }
+    response {
+        err 1 : integer # 0成功 1内部错误 2参数无效 1011帐号已绑定渠道
+    }
+}
+
+# 删除帐号
+.AppleUserTokens {
+    refreshToken 1 : string
+    accessToken 2 : string
+}
+
+DeleteAccount 1011 {
+    request {
+        appleUserTokens 1 : AppleUserTokens # 苹果用户令牌
+    }
+}
+
+# 更新语言
+UpdateLang 1100 {
+    request {
+        lang 1 : string  # 语言名称
+    }
+}
+
+# 请求跨天
+CrossDay 1110 {
+    request { }
+}
+
+# 刷新本地数据
+RefreshLocalData 1111 {
+    request {
+        key 1 : string
+        value 2 : integer
+     }
+}
+
+# 创建订单
+CreateOrder 1200 {
+    request {
+        confId 1 : integer  # 商品编号 即配置id
+        store 2 : string # 商店名 目前应固定填为QingCi
+    }
+    response {
+        payload 1 : string  # 附件信息 透传给第三方支付平台
+        notifyUrl 2 : string # 支付回调地址 透传给第三方支付平台 
+    }
+}
+
+# 验证订单
+VerifyOrder 1201 {
+    request {
+        store 1 : string  # 商店名称
+        receipt 2 : string  # 订单回执
+    }
+    response { 
+        err 1 : integer # 错误码
+        sandbox 3 : boolean # 是否测试订单
+    }
+}
+
+# 通知新订单
+NotifyNewOrder 1202 {
+    request {
+        store 1 : string  # 商店名称
+        transId 2 : string  # 订单编号
+        productId 3 : string  # 商品编号
+        payload 4 : string  # 附件信息
+        userData 5 : integer # 商品配置ID IAP
+        sandbox 6 : boolean # 是否沙盒环境 true:沙盒环境
+    }
+}
+
+# 确认订单
+ConfirmOrder 1203 {
+    request {
+        store 1 : string  # 商店名称
+        transId 2 : string  # 订单编号
+    }
+}
+
+# 购买商品
+PurchaseProduct 1204 {
+    request {
+        shopId 1 : integer  # 商品编号
+    }
+}
+
+# 补单
+ReplacementOrder 1205 {
+    request { }
+    response { }
+}
+
+# 领取累计充值奖励
+ClaimTotalReward 1206 {
+    request { 
+        id 1 : integer
+    }
+}
+
+# 查询邮件
+QueryMail 1210 {
+    request {
+    }
+    response {
+        mailDict 1 : *UserData.Mail(mailId)  # 邮件列表
+    }
+}
+
+# 通知新邮件
+NotifyNewMail 1211 {
+    request {
+        mail 1 : UserData.Mail  # 邮件
+    }
+}
+
+# 读取邮件
+ReadMail 1212 {
+    request {
+        mailId 1 : integer  # 邮件编号
+    }
+}
+
+# 领取邮件
+ClaimMail 1213 {
+    request {
+        mailId 1 : integer  # 邮件编号
+    }
+}
+
+# 删除邮件
+TrashMail 1214 {
+    request {
+        mailId 1 : integer  # 邮件编号
+    }
+}
+
+# 兑换CDkey
+RedeemCDKey 1220 {
+    request {
+        cdkey 1 : string  # 兑换码
+    }
+    response {
+        itemList 1 : *Item  # 物品列表
+        errorNum 2 : integer  # 错误信息
+    }
+}
+
+# 确认CDkey
+ConfirmCDKey 1221 {
+    request {
+        cdkey 1 : string  # 兑换码
+    }
+}
+
+# 通知全量拉取邮件
+NotifyPullMail 1223 {
+    request {
+    }
+}
+
+# 修改名字
+ChangeName 1300 {
+    request {
+        name 1 : string # 名字
+    }
+    response {
+        result 1 : integer # 结果 0：成功;1：名字已使用;2：物品不足
+    }
+}
+
+# 修改头像
+ChangeAvatar 1301 {
+    request {
+        avatarId 1 : integer # 头像ID
+        borderId 2 : integer # 头像框ID
+    }
+}
+
+# 修改名字颜色
+ChangeNameColor 1302 {
+    request {
+        index 1 : integer
+    }
+}
+
+# 修改头像框
+ChangeAvatarBorder 1303 {
+    request {
+        id 1 : integer # 头像框ID
+    }
+}
+
+# 修改称号
+ChangeBadge 1304 {
+    request {
+        id 1 : integer # 称号ID
+    }
+}
+
+# 领取称号
+ReceiveBadge 1305 {
+    request {
+        id 1 : integer # 称号ID
+    }
+}
+
+# 领取所有称号
+ReceiveBadgeAll 1306 {
+    request {
+    }
+}
+
+# 使用物品
+UsedItem 1400 {
+    request {
+        type 1 : integer #使用类型 1:打开,2:自选
+        item 2 : Item # 使用的物品和数量
+        index 3 : integer # 在自选类型下为当前选择的索引
+    }
+}
+
+# 使用礼包
+OpenDiscord 1410 {
+    request {}
+}
+
+# 使用礼包
+UsedDiscordCode 1411 {
+    request {
+        code 1 : string # 礼包码
+    }
+}
+
+# 升级塔
+TowerUpgrade 1500 {
+    request {
+        id 1 : integer # 塔id
+    }
+}
+
+# 升级天赋
+TalentUpgrade 1501 {
+    request {
+        id 1 : integer # 塔id
+    }
+}
+
+# 改造塔
+TowerReform 1502 {
+    request {
+        id 1 : integer # 塔id
+    }
+}
+
+# 确认改造
+TowerConfirmReform 1503 {
+    request {
+        id 1 : integer # 塔id
+    }
+}
+
+# 改造突破
+TowerBreakthrough 1505 {
+    request {
+        id 1 : integer # 塔id
+    }
+}
+
+# 自动改造塔
+TowerAutoReform 1506 {
+    request {
+        id 1 : integer # 塔id
+    }
+}
+
+ChangeBuyTowerStar 1507 {
+    request {
+        star 1 : integer # 星级
+    }
+}
+
+# 解锁背包格子
+UnlockBagGrid 1508 {
+    request {
+    }
+}
+
+UnlockFortressGrid 1509 {
+    request {
+        id 1 : integer # 要塞格子id
+    }
+}
+
+BuyTower 1510 {
+    request {
+    }
+}
+
+UpdateTowerPos 1511 {
+    request {
+        sn 1 : integer # 要更新的SN
+        pos 2 : integer # 更新的位置
+    }
+}
+
+MergeTower 1512 {
+    request {
+        sn1 1 : integer # 要合并的塔1
+        sn2 2 : integer # 要合并的塔2
+    }
+}
+
+UpdateFortress 1513 {
+    request {
+    }
+}
+
+RecombinationTower 1514 {
+    request {
+        reTowersSn 1 : *integer
+    }
+}
+
+# 锁定塔
+LockTower 1515 {
+    request {
+        lock 1 : *integer
+        unlock 2 : *integer
+    }
+}
+
+# 一键合并塔
+OneKeyMerge 1516 {
+    request {}
+}
+
+# 解锁泰坦
+TitanUnlock 1517 {
+    request {
+        id 1 : integer # 塔id
+    }
+}
+
+# 升级泰坦
+TitanUpgrade 1518 {
+    request {
+        id 1 : integer # 塔id
+    }
+}
+
+# 升级泰坦开发
+TitanDevUpgrade 1519 {
+    request {
+        id 1 : integer # 塔id
+        attrId 2 : integer # 属性id
+    }
+}
+
+# 升级泰坦技能
+TitanSkillUpgrade 1520 {
+    request {
+        id 1 : integer # 塔id
+        skillId 3 : integer # 技能id
+    }
+}
+
+# 更新泰坦位置
+UpdateTitanPos 1521 {
+    request {
+        id 1 : integer 
+        pos 2 : integer
+    }
+}
+
+# 领取泰坦试炼奖励
+GetTitanTryOutReward 1522 {
+    request {
+        id 1 : integer
+    }
+}
+
+# 更新泰坦使用次数
+UpdateTitanTryOutCount 1523 {
+    request {
+        id 1 : integer
+    }
+}
+
+# 解锁通用格子
+UnlockUniversalGrid 1524 {
+    request {
+        id 1 : integer # 要塞格子id
+    }
+}
+
+# 使用要塞
+UseFortressId 1525 {
+    request {
+        id 1 : integer # 要塞id
+    }
+}
+
+# 购买精英商品
+EliteGoodsBuy 1601 {
+    request {
+        id 1 : integer
+    }
+}
+
+# 领取精英组商品奖励
+EliteClaimReward 1602 {
+    request {
+        id 1 : integer
+    }
+}
+
+# 激活系统天赋
+SystemTalentActivate 1700 {
+    request {
+        id 1 : integer
+    }
+}
+
+# 开启通行证
+ActivatePassport 1800 {
+    request {
+        id 1 : integer # 激活的ID
+    }
+}
+
+# 领取通行证
+ClaimPassport 1801 {
+    request {}
+}
+
+# 领取通行证任务
+ClaimPassportTask 1802 {
+    request {
+        id 1 : integer
+    }
+}
+
+# 领取通行证任务
+ClaimPassportTaskAll 1803 {
+    request {}
+}
+
+# 快速升级通行证等级
+QuickUpgradePassport 1804 {
+    request {}
+}
+
+# 领取基金
+ClaimFund 1850 {
+    request {
+        id 1 : integer # 基金商店
+    }
+}
+
+# 要塞 装备相关
+FortressUseEquip 2000 {
+    request {
+        sn 1 : integer
+    }
+}
+
+FortressUnuseEquip 2001 {
+    request {
+        sn 1 : integer
+    }
+}
+
+FortressUpgradeEquip 2002 {
+    request {
+        sn 1 : integer
+        once 2 : boolean
+    }
+}
+
+FortressDowngradeEquip 2003 {
+    request {
+        sn 1 : integer
+    }
+}
+
+FortressCraftOneEquip 2004 {
+    request {
+        mainSn 1 : integer
+        snList 2 : *integer
+        item 3 : Item
+    }
+}
+
+FortressCraftAllEquip 2005 {
+    request {
+    }
+}
+
+FortressDiscardCraftEquip 2006 {
+    request {
+        sn 1 : integer
+    }
+}
+
+# 要塞 技能相关
+FortressUseSkill 2100 {
+    request {
+        sn 1 : integer
+        slot 2 : integer
+    }
+}
+
+FortressUnuseSkill 2101 {
+    request {
+        sn 1 : integer
+    }
+}
+
+FortressCraftOneSkill 2102 {
+    request {
+        mainSn 1 : integer
+        snList 2 : *integer
+        item 3 : Item
+    }
+}
+
+FortressCraftAllSkill 2103 {
+    request {
+    }
+}
+
+FortressDiscardCraftSkill 2104 {
+    request {
+        sn 1 : integer
+    }
+}
+
+
+# 商店 购买常规商品
+ShopBuy 2200 {
+    request {
+        id 1 : integer
+    }
+}
+
+# 商店 扭蛋机
+GachaBuy 2201 {
+    request {
+        id 1 : integer
+        type 2 : integer
+        times 3 : integer
+    }
+}
+
+GachaSetTrialState 2202 {
+    request {
+        id 1 : integer
+        state 2 : integer
+    }
+} 
+
+GachaClaimTrialReward 2203 {
+    request {
+        id 1 : integer
+    }
+}
+
+# 黑市购买（每日）
+DailyShopBuy 2204 {
+    request {
+        id 1 : integer
+    }
+}
+
+# 背包 宝箱
+BagUseAutoChest 2300 {
+    request {
+        type 1 : integer
+        count 2 : integer
+    }
+}
+
+BagUseManualChest 2301 {
+    request {
+        type 1 : integer
+        selection 2 : *KVIntInt()
+    }
+}
+
+# 小助手一键升级炮塔
+AssistantUpgradeTower 2400 {
+    request {
+        id 1 : integer
+    }
+}
+
+AssistantUpgradeTalent 2401 {
+    request {
+        id 1 : integer
+    }
+}
+
+AssistantUpgradeTitan 2402 {
+    request {
+        id 1 : integer
+    }
+}
+
+AssistantUpgradePilot 2403 {
+    request {
+        id 1 : integer
+    }
+}
+
+# 领取VIP奖励
+VipClaimFirstReward 2500 {
+    request {
+        id 1 : integer
+    }
+}
+
+# 领取VIP奖励
+VipClaimDailyReward 2501 { 
+    request {
+        id 1 : integer
+    }
+}
+
+# 安全箱超时重置
+SafeBoxTimeoutReset 2510 { 
+    request { 
+        time 1 : integer
+    }
+}
+
+# 安全箱购买
+SafeBoxPurchaseStart 2511 { 
+    request { 
+        time 1 : integer
+    }
+}
+
+# 驾驶员解锁
+PilotUnlock 2550 { 
+    request { 
+        id 1 : integer # 驾驶员id
+    }
+}
+
+# 驾驶员上阵
+PilotUse 2551 { 
+    request { 
+        id 1 : integer # 驾驶员id
+        titanId 2 : integer # 泰坦id
+    }
+}
+
+# 驾驶员升级
+PilotUpgrade 2552 { 
+    request { 
+        id 1 : integer # 驾驶员id
+    }
+}
+
+# 购买月卡
+BuyMonthCard 3000 {
+    request {
+        id 1 : integer # 月卡id
+    }
+}
+
+# 领取月卡
+ClaimMonthCard 3001 {
+    request {
+        id 1 : integer # 月卡id
+    }
+}
+
+# 领取月卡
+ClaimFreeMonthCard 3002 {
+    request {}
+}
+
+# 领取月卡
+ClaimMonthCardTitan 3003 {
+    request {
+        id 1 : integer # 月卡id
+        select 2 : integer # 月卡id
+    }
+}
+
+# 购买首充礼包
+BuyFirstPayGift 3010 {
+    request {}
+}
+
+# 领取首充礼包
+ClaimFirstPayGift 3011 {
+    request {}
+}
+
+# 解锁首充礼包
+UnlockFirstPayGift 3012 {
+    request {}
+}
+
+# 下一个首充礼包
+NextFirstPayGift 3013 {
+    request {}
+    response {}
+}
+
+# 购买周期礼包
+BuyCycleGift 3501 {
+    request {
+        id 1 : integer
+    }
+}
+
+# 购买周期礼包
+ChangeCycleGiftIndex 3502 {
+    request {
+        id 1 : integer
+        selects 2 : *KVIntInt()
+    }
+}
+
+ClaimCycleGiftReward 3503 {
+    request {
+        index 1 : integer
+    }
+}
+
+# 主线开始战斗
+PveStartBattle 4001 {
+    request {}
+}
+
+# 主线结束战斗
+PveEndBattle 4002 {
+    request {
+        pveId 1 : integer # 关卡id
+        result 2 : integer # 战斗结果
+        killNum 3 : integer # 击杀数量
+        is_perfect 4 : boolean # 是否完美
+    }
+}
+
+# 主线双倍奖励
+PveDoubleRewards 4003 {
+    request {
+        pveId 1 : integer #关卡id
+    }
+}
+
+# 副本开始战斗
+DungeonStartBattle 4004 {
+    request {
+        id 1 : integer # 副本id
+        diff 2 : integer # 副本难度
+    }
+}
+
+# 副本结束战斗
+DungeonEndBattle 4005 {
+    request {
+        data 1 : DungeonBattleData #战斗数据
+    }
+}
+
+# 副本扫荡
+DungeonSweep 4006 {
+    request {
+        id 1 : integer # 副本id
+        diff 2 : integer # 副本难度
+        count 3 : integer # 扫荡次数
+    }
+}
+
+# 副本领取首通奖励
+DungeonReceiveFirst 4007{
+    request {
+        id 1 : integer # 副本id
+        diff 2 : integer # 副本难度
+    }
+}
+
+# 副本领取所有首通奖励
+DungeonReceiveAllFirst 4008 {
+    request {
+        id 1 : integer # 副本id
+    }
+}
+
+# 关闭主线战斗结算界面
+PveBattleEndNoDouble 4009 {
+    request {
+        pveId 1 : integer # 关卡id
+    }
+}
+
+# 领取主线回收机奖励
+PveReceiveDoubleRecycle 4010 {
+    request {
+        pveId 1 : integer # 关卡id
+    }
+}
+
+# 领取主线回收机所有奖励
+PveReceiveAllDoubleRecycle 4011 {
+    request {}
+}
+
+# 副本观看广告
+DungeonWatchAd 4012 {
+    request {
+        dungeonId 1 : integer # 副本id
+    }
+}
+
+# 获取谷歌评分奖励
+ReceiveGoogleScoreRewards 4013 {
+    request {}
+}
+
+# 泰坦副本记录数据
+DungeonRecordTitan 4014 {
+    request {
+        id 1 : integer # 关卡id
+        list 2 : *integer # 泰坦列表
+        diff 3 : integer # 副本难度
+    }
+    response {}
+}
+
+# 泰坦副本领取每日奖励
+DungeonReceiveTitanReward 4015 {
+    request {
+        id 1 : integer # 关卡id
+        free 2 : boolean # 是否免费
+    }
+}
+
+# 副本挑战boss快速战斗
+DungeonBossQuickBattle 4016 {
+    request {
+        id 1 : integer # 关卡id
+    }
+}
+
+PveSkipBattle 4017 {
+    request {}
+}
+
+PveResetSkipBattle 4018 {
+    request {}
+}
+
+# 领取主线任务奖励
+MissionReceiveMain 4100 {
+    request {}
+}
+
+# 领取日常任务奖励
+MissionReceiveDaily 4101 {
+    request {
+        id 1 : integer # 任务id
+    }
+}
+
+# 领取日常委托奖励
+MissionReceiveDailyQuest 4102 {
+    request {}
+}
+
+# 升级每日任务等级
+MissionUpDailyLevel 4103 {
+    request {}
+}
+
+# 开始研究蓝图
+LibraryStartResearch 4200 {
+    request {
+        id 1 : integer # 蓝图id
+    }
+}
+
+# 完成蓝图研究
+LibraryCompleteResearch 4201 {
+    request {
+        index 1 : integer # 蓝图研究index
+    }
+}
+
+# 加速蓝图研究
+LibraryAccelerateResearch 4202 {
+    request {
+        type 1 : integer # 加速类型
+        numType 2 : integer # 使用数量类型
+        index 3 : integer # 加速蓝图index
+    }
+}
+
+# 获取研究任务奖励
+LibraryReceiveMissionRewards 4203 {
+    request {
+        id 1 : integer # 任务id
+    }
+}
+
+# 获取研究所有任务奖励
+LibraryReceiveAllMissionRewards 4204 {
+    request {}
+}
+
+# 完成所有蓝图研究
+LibraryCompleteAllResearch 4205 {
+    request {}
+}
+
+# 世界获取星级奖励
+WorldReceiveStarRewards 4300 {
+    request {}
+}
+
+# 世界获取章节星级奖励
+WorldReceiveChapterStarRewards 4301 {
+    request {
+        chapter 1 : integer # 章节id
+        index 2 : integer # 任务index
+    }
+}
+
+# 世界提升委托等级
+WorldUpRequestLevel 4302 {
+    request {}
+}
+
+# 世界激活星级功能
+WorldActiveStarFunc 4303 {
+    request {}
+}
+
+# 世界获取生产物品
+WorldReceiveProducts 4304 {
+    request {}
+}
+
+# 世界加速产出
+WorldAccelerateProduct 4305 {
+    request {
+        isAd 1 : boolean # 是否使用广告
+    }
+}
+
+# 世界挑战开始战斗
+WorldStartBattle 4306 {
+    request {
+        chapterId 1 : integer # 章节id
+        battleIndex 2 : integer # 难度
+    }
+}
+
+# 世界挑战结束战斗
+WorldEndBattle 4307 {
+    request {
+        chapter 1 : integer # 章节id
+        battleIndex 2 : integer # 难度
+        result 3 : boolean # 战斗结果
+        killNum 4 : integer # 击杀数量
+    }
+}
+
+# 世界气泡时间结束
+WorldBubbleDurationEnd 4308 {
+    request {}
+}
+
+# 世界气泡生成
+WorldCreateBubble 4309 {
+    request {}
+}
+
+# 世界领取气泡奖励
+WorldReceiveBubbleRewards 4310 {
+    request {
+        pos 1 : integer # 气泡位置
+    }
+}
+
+# 世界事件时间结束
+WorldEventDurationEnd 4311 {
+    request {}
+}
+
+# 世界事件生成
+WorldCreateEvent 4312 {
+    request {}
+}
+
+# 世界完成事件
+WorldCompleteEvent 4313 {
+    request {
+        pos 1 : integer # 事件位置
+        hpRate 2 : integer(3) # hp比例
+    }
+}
+
+# 按战力匹配玩家
+WorldPvpMatch 4314 {
+    request {
+        pos 1 : integer # 事件坐标
+    }
+    response {
+        userId 1 : integer  # 玩家id
+        power 2 : integer   # 其战力
+    }
+}
+
+# 按id获取玩家战力
+WorldGetUserPower 4315 {
+    request {
+        userId 1 : integer # 目标玩家
+    }
+    response {
+        power 1 : integer   # 战力
+    }
+}
+
+# 世界随机事件敌人名字
+WorldEventRollName 4316 {
+    request {
+        pos 1 : integer # 事件坐标
+    }
+}
+
+# 福利获得任务奖励
+WelfareReceiveMissionRewards 4400 {
+    request {
+        id 1 : integer # 任务id
+    }
+}
+
+# 福利获得通行证奖励
+WelfareReceivePassRewards 4401 {
+    request {
+        passType 1 : integer # 任务id
+        rewardType 2 : integer # 奖励类型
+        lv 3 : integer # 奖励等级
+    }
+}
+
+# 福利获得所有任务奖励
+WelfareReceiveAllMissionRewards 4402 {
+    request {
+        type 1 : integer # ui类型
+    }
+}
+
+
+# 福利获得所有通行证奖励
+WelfareReceiveAllPassRewards 4403 {
+    request {
+        type 1 : integer # ui类型
+    }
+}
+
+# 签到
+SignInFirst 4500 {
+    request {}
+}
+
+# 签到
+SignIn 4501 {
+    request {}
+}
+
+# 更新在线时间
+UpdateOnlineTime 4502 {
+    request {}
+}
+
+# 领取在线奖励
+ClaimOnlineReward 4503 {
+    request {}
+}
+
+# 千抽狂欢签到
+SignIn10 4504 {
+    request {}
+}
+
+# 更新在线时间
+UpdateTargetPackTime 4600 {
+    request {}
+}
+
+# 购买定向礼包
+BuyTargetPack 4601 {
+    request {
+        id 1 : integer
+    }
+}
+# 更新在线时间
+TargetPackPay 4602 {
+    request {
+        towerId 1 : integer # 塔id
+        packId 2 : integer # 礼包id
+    }
+}
+
+# 7日任务-领取活跃度奖励
+SevenMissionClaimProgress 4700 {
+    request {}
+}
+
+# 7日任务-领取任务奖励
+SevenMissionClaimReward 4701 {
+    request {
+        id 1 : integer
+        day 2 : integer
+    }
+}
+
+# 7日任务-领取福利
+SevenMissionClaimWelfare 4702 {
+    request {
+        id 1 : integer
+        day 2 : integer
+    }
+}
+
+SevenMissionNewTurn 4703 {
+    request {}
+    response {}
+}
+
+# 事件更新存档
+EventUpdateArchive 5000 {
+    request {
+        id 1 : integer # 档案id
+        condition 2 : integer # 条件
+        value 3 : integer # 更新值
+    }
+}
+
+# 事件观看广告
+EventWatchAd 5001 {
+    request {
+        uiType 1 : integer # ui类型
+        times 2 : integer # 观看次数
+    }
+}
+
+UVAShopShowAd 5100 {
+    request {
+        id 1 : integer
+    }
+}
+
+UVAShopClaimRewards 5101 {
+    request {
+        id 1 : integer
+    }
+}
+
+############################
+# 公会 错误码
+############################
+#   0 ERR_OK 成功
+#   1 ERR_NAME_SENSITIVE
+#   2 ERR_NOTICE_SENSITIVE
+#	3 ERR_RECRUIT_SENSITIVE
+#	4 ERR_NAME_USED 名字已占用 
+#	5 ERR_FULL 公会请求或成员已满
+#	6 ERR_NOT_FOUND 未找到目标
+#	7 ERR_NO_PERM 没有权限
+#	8 ERR_UNSUPPORT 不支持的操作
+#	9 ERR_JOINED 已加入
+#	10 ERR_DISMISSED 公会已解散
+
+
+
+#####################
+# 公会
+#####################
+
+# 创建公会
+GuildCreate 6000 {
+    request {
+        name 1 : ColorText
+        visualType 2 : integer
+        flag 3 : GuildFlag
+        noticeInfo 4 : string
+        recruitInfo 5 : string
+    }
+    response {
+        # err的取值
+        err 1 : integer # 见公会错误码
+        
+        # 当为ERR_OK时有意义 
+        # 之后应立即调用GuildLogin 拉取公会存档
+        guildId 2 : integer 
+    }
+}
+
+# 登录公会
+GuildLogin 6001 {
+    request {}
+    response {
+        err 1 : integer # 见公会错误码
+        guildData 2 : GuildData # 当为ERR_OK时有意义
+    }
+}
+
+# 退出公会
+GuildExit 6002 {
+    request {}
+    response {}
+}
+
+# 公会推送事件
+GuildPushEvent 6003 {
+    request {
+        event 1 : GuildEvent
+    }
+}
+
+# 公会聊天
+GuildChat 6004 {
+    request {
+        text 1 : string
+    }
+}
+
+# 公会加入 针对visualType=1的公会
+GuildJoin 6005 {
+    request {
+        guildId 1 : integer
+    }
+    response {
+        err 1 : integer
+    }
+}
+
+# 发送入会申请
+GuildRequest 6006 {
+    request {
+        guildId 1 : integer
+    }
+    response {
+        err 1 : integer
+    }
+}
+
+# 批准入会申请
+GuildApprove 6007 {
+    request {
+        userId 1 : integer # 目标玩家id
+    }
+    response {
+        err 1 : integer
+    }
+}
+
+# 拒绝入会申请
+GuildReject 6008 {
+    request {
+        userId 1 : integer
+    }
+    response {
+        err 1 : integer
+    }
+} 
+
+# 踢出公会
+GuildKick 6009 {
+    request {
+        userId 1 : integer
+    }
+    response {
+        err 1 : integer
+    }
+}
+
+# 公会设置
+GuildSetting 6010 {
+    request {
+        setting 1 : GuildData # 仅填充要用到的字段 从name到recruitInfo 
+    }
+    response {
+        err 1 : integer
+    }
+}
+
+# 任命 副会长
+GuildAddManager 6011 {
+    request {
+        userId 1 : integer
+    }
+    response {
+        err 1 : integer
+    }
+}
+
+# 解任 副会长
+GuildDelManager 6012 {
+    request {
+        userId 1 : integer
+    }
+    response {
+        err 1 : integer
+    }
+}
+
+# 升级科技项
+GuildTechUpgrade 6013 {
+    request {
+        techId 1 : integer
+    }
+    response {
+        err 1 : integer
+    }
+}
+
+# 查找公会
+GuildQuery 6014 {
+    request {
+        guildId 1 : integer
+    }
+    response {
+        err 1 : integer
+        guildData 2 : GuildData
+    }
+}
+
+# 推荐公会 
+GuildRecommend 6015 {
+    request {}
+    response {
+        guildDatas 1 : *GuildData
+    }
+}
+
+# 公会签到
+GuildSignin 6016 {
+    request {
+        id 1 : integer # 配置表id
+    }
+}
+
+# 公会通用商店
+GuildBuyCommonShop 6017 {
+    request {
+        id 1 : integer # 配置表id
+    }
+
+}
+
+# 取消公会申请
+GuildCancelApply 6018 {
+    request {
+        guildId 1 : integer
+    }
+}
+
+# 公会战商店购买
+GuildBattleShopBuy 6019 {
+    request {
+        id 1 : integer
+        count 2 : integer
+    }
+}
+
+# 公会副本 更新伤害
+GuildDungeonUpdateDamage 6020 {
+    request {
+        damage 1 : integer # 公会副本战斗后 产生伤害值
+    }
+    response {
+        yourRank 1 : integer # 你在公会内的排位
+    }
+}
+
+# 公会副本 公会榜单
+GuildDungeonGuildRank 6021 {
+    request {}
+    response {
+        list 1 : *GuildData # guildId, name, level, flag, dungeonDamage(此公会的总伤害)
+        yourGuildRank 2 : integer # 你所在公会的排位 0表示未进入榜单
+        yourGuildDamage 3 : integer # 你所在公会的总伤害
+    } 
+}
+
+# 公会副本 成员榜单
+GuildDungeonMemberRank 6022 {
+    request {
+    }
+    response {
+        list 1 : *sWarRankPlayer # userId, name, avatar, value(伤害值)
+        yourRank 2 : integer # 你的排位 0表示未进入榜单
+        yourDamage 3 : integer # 你的伤害值
+    }
+}
+
+# 公会副本 领取活跃奖励
+GuildDungeonReceiveActive 6023 {
+    request {
+        id 1 : integer # 奖励id
+    }
+}
+
+#############################################
+# 荒野战争
+#############################################
+.sWarBuff {
+    id 1 : integer # buff id
+    extraInt 2 : integer # 扩展整数字段 目前用于存储buff(id=201)的等级
+
+    # 对应公会战rougelike 城市buff
+    expiry 3 : integer # 到期时间
+    cityId 4 : integer # buff依附的城市
+}
+
+.sWarPlayerLog {
+    .LogArgCommon {
+        isSenderWin 1 : boolean # 发送方是否胜利
+        sender 2 : sWarPlayer # faction, userId, name, title, cityId, aiId
+        recver 3 : sWarPlayer # 同上
+        senderDelta 4 : integer # 发送方hp变化量
+        recverDelta 5 : integer # 接收方hp变化量
+    }
+
+    .LogArgSkill {
+        sender 1 : sWarPlayer # 施放技能的玩家 title, name
+        skillId 2 : integer # 技能id
+        cityId 3 : integer # 技能目标城市
+        hpDelta 4 : integer # hp变化量
+    }
+
+    type 1 : integer # 1战斗 2治疗 3技能
+    time 2 : integer # 事件戳
+    arg1 3 : LogArgCommon # 根据type的值 读取对应的arg字段
+    arg2 4 : LogArgCommon
+    arg3 5 : LogArgSkill
+}
+
+.sWarPlayerFlag {
+    player 1 : sWarPlayer # faction, avatar, title, name
+    expiry 2 : integer
+}
+
+.sWarGift {
+    giftId 1 : integer # 礼包id 指向item表
+    sender 2 : sWarPlayer # 赠送者 avatar, title, name
+    guildFlag 3 : GuildFlag # 赠送者的公会旗帜
+    guildName 4 : ColorText # 赠送者的公会名字
+    claimed 5 : boolean # 是否已领取
+}
+
+.sWarPlayer {
+    userId 1 : integer
+    name 2 : ColorText # 如果是ai玩家(faciton == WarEnum.FACTION_AI 或者 aiId字段有值) 则name.text是多语言key
+    avatar 3 : PlayerAvatar
+    guildId 4 : integer # 公会id
+    faction 5 : integer # 阵营id
+    power 6 : integer # 战力
+    honor 7 : integer # 军功
+    title 8 : integer # 军衔
+    cityId 9 : integer # 所在城市的id
+    hpMax 10 : integer # hp(城防)最大值
+    hpCur 11 : integer # hp(城防)当前值
+    skillCooling 12 : *KVIntInt() # 冷却中的个人技能 key: 技能id, value: 冷却完成时间戳
+    buffDict 13 : *sWarBuff(id) # buff字典
+    logs 14 : *sWarPlayerLog # 战报列表
+    nSendCure 15 : integer # 发送治疗次数
+    nRecvCure 16 : integer # 接收治疗次数
+    nAttack 17 : integer # 进攻次数
+    nDefend 18 : integer # 防守次数
+    nflagUsed 19 : integer # 插旗次数
+    nWinStreak 20 : integer # 连胜次数
+    guildFlag 21 : GuildFlag # 公会旗帜
+    guildName 22 : ColorText # 公会名
+
+    rougeBonus 23 : *KVIntInt() # rouge玩法加成型奖励 key是cfgId指向war_rougelike表 value是等级 玩家选1次 加1级
+    rougeChanceLogin 24 : integer # 登录相关的 剩余可用3选1机会
+    rougeChanceTitle 25 : integer # 军衔相关的 剩余可用3选1机会
+    rougeAdRefresh 26 : boolean # 是否可以广告刷新3选1候选
+    rougeRandSeed 27 : integer # 用于产生3选1候选的随机种子
+    rougeFreeMove 28 : boolean # 肉鸽 死灰复燃标记
+
+    giftList 29 : *sWarGift # 大佬恩赐的礼包数组 
+
+    aiId 90 : integer # ai玩家的配置表id 指向war_city_ai表
+}
+
+.sWarCity {
+    id 1 : integer
+    faction 2 : integer # 所属阵营
+    defenders 3 : *sWarPlayer(userId) # 守军列表 注意: 仅WarCityDetail协议会填充此字段
+
+    # 各阵营的最大军旗到期时间
+    # key: 阵营id
+    # value: 该阵营军旗最大的到期时间 若serverTime < value 则军旗有效
+    factionFlags 4 : *KVIntInt() 
+
+    occupyTime 5 : integer # 占领开始时间
+    defenderCnt 6 : integer # 守军数量
+    combatIntensity 7 : integer(6) # 战斗烈度
+    factionFlagCnt 8 : *integer # 数组下标对应阵营id 值是该阵营旗帜数量
+
+    buffDict 9 : *sWarBuff(id) # buff字典
+}
+
+
+.sWarConfig {
+    wall_pfix 1 : *integer(3) # 修复城防惩罚
+    wall_rmfix 2 : integer(3) # 修复自身损失
+}
+
+.sWarGame {
+    seasonId 1 : integer
+    seasonEndTime 2 : integer # 赛季结束时间
+    gameId 3 : integer # 忽略
+    groupLv 4 : integer # 分组级别 指向war_guildgroup表
+    cityDict 5 : *sWarCity(id) # 城市列表
+    skillCooling 6 : *KVIntInt() # 冷却中的全局技能 技能id : 冷却完成时间
+
+    you 7 : sWarPlayer # 请求sWarGame的玩家自身数据
+
+    # 你所在阵营的领袖 影响发布阵营宣言的权限 userId, name, title, avatar, faction
+    # 不一定有值 注意判空!!!
+    leader 8 : sWarPlayer 
+
+    factionNotice 9 : string # 阵营宣言 默认值是空字符串
+    guildNotice 10 : string # 公会宣言 默认值是空字符串
+
+    # 发布阵营公告的玩家 初始为nil
+    # title, name, avatar, faction, guildFlag, guildName
+    factionNoticeLeader 11 : sWarPlayer 
+
+    config 12 : sWarConfig # 后端下发的易变配置
+}
+
+
+.LocalizedArg {
+    # 1 arg是多语言key 
+    # 2 arg是直接使用的值
+    type 1 : integer 
+    arg 2 : string
+}
+
+.sWarMessage {
+    .sChat {
+        guild 1 : GuildData # name, flag有赋值
+        player 2 : sWarPlayer # name, avatar, title有值
+        type 3 : integer # 文本类型 1直接显示 2多语言
+        args 4 : *LocalizedArg # 文本参数
+    }
+
+    .sUseFlag {
+        player 1 : sWarPlayer # faction, title, name
+        cityId 2 : integer
+        expiry 3 : integer # 用player.faction 以及expiry字段 可更新该阵营军旗的最大超时
+    }
+
+    .sBeatPlayer {
+        sender 1 : sWarPlayer # faction, title, name, aiId
+        recver 2 : sWarPlayer # 同上
+        cityId 3 : integer
+    }
+
+    .sCityExchange {
+        # 同志们要注意下
+        # player.faction 是易主后的阵营
+        # city.faction 是易主前的阵营
+        player 1 : sWarPlayer # faction, name, title
+        city 2 : sWarCity # id, faction
+    }
+
+    .sUseSkill {
+        city 1 : sWarCity # id, faction
+        fromFaction 2 : integer # 释放技能的阵营
+        skillId 3 : integer
+        sender 4 : sWarPlayer # 释放此技能的玩家 title, name, userId
+    }
+
+    .sUpdateBuff {
+        type 1 : integer # 1增加或覆盖 2移除
+        buff 2 : sWarBuff
+    }
+
+    .sFactionNotice {
+        notice 1 : string
+        leader 2 : sWarPlayer # 发布公告的玩家 title, name, avatar, faction, guildFlag, guildName
+    }
+
+    channel 99 : integer # 频道 1世界 2阵营 3公会
+    type 98 : integer # 类型 1聊天 2军衔变更 ...
+    time 97 : integer # 时间
+
+    arg1 1 : sChat
+
+    # 数组包含所有军衔变动的玩家 前端需要处理:
+    # 1 确定数组中是否包含自己 如果是 则应用新数据到本地
+    # 2 从中找出每个阵营的大元帅(title=29) 然后按需求生成大元帅变更系统消息
+    arg2 2 : *sWarPlayer # hpCur, hpMax, faction, name, title, buffDict, rougeChanceTitle 有赋值
+
+    arg3 3 : sFactionNotice # 阵营公告文本
+    arg4 4 : sUseFlag
+    arg5 5 : sBeatPlayer
+    arg6 6 : sCityExchange # id, faction, occupyTime, defenderCnt
+    arg7 7 : sUseSkill
+    arg8 8 : sWarPlayer # 包含全部字段 cityId已更新为主城id hpCur等字段也有重置
+    arg9 9 : sWarPlayerLog
+    arg10 10 : *integer # 守军数量归0的cityId列表
+    arg11 11 : *integer # 守军数量从0变为非0的的cityId列表
+    arg12 12 : *sUpdateBuff # 按此字段各个元素的类型 更新本地自身玩家的buffDict
+    arg13 13 : *sWarPlayer # 当被治疗、攻击时触发 从中找到自己 并应用userId, hpCur, hpMax
+    arg14 14 : KVIntInt # key是全局技能id val是冷却到期时间戳
+    arg15 15 : *sWarPlayer # 更新各阵营领袖 userId, name, title, avatar, faction
+    arg16 16 : string # 公会公告文本
+    arg17 17 : integer # 赛季进入战斗阶段 此字段的值无意义
+    arg18 18 : *KVIntInt # 守军人数变动的城市列表 对于每个KVIntInt key是城市id val是守军人数
+    arg19 19 : *sWarCity # 旗帜数量发生变化的城市列表 对于每个元素 id, factionFlagCnt有填充
+    arg20 20 : *sUpdateBuff # 按照此列表的顺序 根据cityId关连到城市 根据type执行对应操
+    arg21 21 : sWarGift # 受赠礼包 将该字段的值 table.insert到自己WarPlayer.giftList
+}
+
+# 登录
+WarLogin 7001 {
+    request {}
+    response {
+        err 1 : integer # 0成功 1赛季准备中 9赛季已开始 但未加入 10通过进出不同公会 跨越战争副本
+        prepareEndTime 2 : integer # 准备阶段结束时间 当err = 1
+        seasonEndTime 3 : integer # 当前赛季结束事件 当err = 9
+        guildRank 4 : integer # 本公会排名(小于0表示未进入排名) 当err = 1
+        gameData 5 : sWarGame # 游戏数据 仅当err = 0
+    }
+}
+
+# 查看城市详情
+WarCityDetail 7002 {
+    request {
+        id 1 : integer
+    }
+    response {
+        city 1 : sWarCity # id, faction, defeners, factionFlagCnt
+        guildDict 2 : *GuildData(guildId) # name, flag
+    }
+}
+
+# 移动到指定城市
+WarCityMove 7003 {
+    request {
+        path 1 : *integer # 起点城市到终点城市的id列表
+        isDstCityEmpty 2 : boolean # 目标城市是不是空城
+    }
+    response {
+        err 1 : integer
+        cityId 2 : integer # 当前玩家 最新位置
+    }
+}
+
+# 插旗
+WarCityUseFlag 7004 {
+    request {
+        cityId 1 : integer
+    }
+    response {
+    }
+}
+
+# 查看军旗列表
+WarCityFlagList 7005 {
+    request {
+        cityId 1 : integer
+    }
+    response {
+        faction1 1 : *sWarPlayerFlag # 阵营1军旗列表 无军旗则是空数组
+        faction2 2 : *sWarPlayerFlag 
+        faction3 3 : *sWarPlayerFlag
+    }
+}
+
+# 治疗
+WarCityCurePlayer 7006 {
+    request {
+        recverId 1 : integer # 接受修复的userId
+        times 2 : integer # 修复次数
+    }
+    response {
+        err 1 : integer
+        stone 2 : integer # 原石奖励
+        hpDelta 3 : integer # 恢复量
+
+    }
+}
+
+# 读取挂机奖励
+WarCityCalcAfk 7007 {
+    request {
+    }
+    response {
+        count 1 : integer # 原石数量
+        limit 2 : integer # 上限
+        scale 3 : integer(3) # 与公会排名对应的缩放值 使用前应乘以100再取整
+        guildRank 4 : *sWarRankGuild # 所属阵营的公会排名
+    }
+}
+
+# 领取挂机奖励
+WarCityClaimAfk 7008 {
+    request {
+    }
+    response {
+        count 1 : integer # 原石数量 应加入背包
+    }
+}
+
+# 查询所有城市战斗烈度
+WarCityQueryAllCombatIntensity 7009 {
+    request {
+    }
+    response {
+        dict 1 : *KVIntNum() # key是cityId value是战斗烈度
+    }
+}
+
+# 获取联盟信息
+WarAllianceInfo 7030 {
+    request {}
+    response {
+        titleUpdateExpiry 1 : integer # 更新军衔超时时间
+        cityCnt 2 : integer
+        guildList 3 : *GuildData # name, flag, level, honor
+        playerList 4 : *sWarPlayer # 按title分组 然后组内按honor排序 然后应用到ui
+    }
+}
+
+# 更新公告
+WarUpdateNotice 7031 {
+    request {
+        type 1 : integer # 1阵营公告 2公会公告
+        notice 2 : string # 公告文本
+    }
+}
+
+# 聊天
+WarChat 7032 {
+    request {
+        channel 1 : integer # 频道 见Enum/War.lua定义
+        type 2 : integer # 文本类型 1直接显示 2多语言
+        args 3 : *LocalizedArg # 参数列表
+    }
+}
+
+# 战争 拉取聊天记录
+# 每个频道的记录 都按时间升序排列
+WarPullChatRecords 7033 {
+    request {}
+    response {
+        world   1 : *sWarMessage # 世界频道
+        faction 2 : *sWarMessage # 阵营频道 
+        guild   3 : *sWarMessage # 公会频道 
+    }
+
+}
+
+# 战争消息推送
+WarPushMessage 7040 {
+    request {
+        msg 1 : sWarMessage
+    }
+}
+
+# 战斗开始
+WarCombatBegin 7050 {
+    request {
+        recverId 1 : integer   # 防守方id
+        enRate 2 : integer # 体力消耗倍率(必填字段)
+    }
+    response {
+        err 1 : integer
+    }
+} 
+
+# 战斗结算
+WarCombatEnd 7051 {
+    request {
+        senderWin 1 : boolean # 进攻方是否胜利
+        senderHpRatio 2 : integer(3) # 进攻方 剩余血量 百分比
+        recverHpRatio 3 : integer(3) # 防守方 剩余血量 百分比
+        senderShellRatio 4 : integer(3) # 进攻方 剩余护盾 百分比
+        recverShellRatio 5 : integer(3) # 防守方 剩余护盾 百分比
+    }
+
+    response {
+        err 1 : integer # 仅当err = err_ok 表示走完结算流程 you, stone字段才有意义
+        you 2 : sWarPlayer # 字段更新后的你的玩家 hpCur, hpMax, honor, title, cityId, buffDict, rougeChanceTitle, rougeFreeMove
+        stone 3 : integer # 原石奖励
+        honorIncr 4 : integer # 军功增量
+        senderHpDecr 5 : integer # 进攻方hp减量 (已是负值)
+        senderHpDecrFlag 6 : integer # 进攻方hp减量中 属于防守方军旗的部分(已是负值)
+        recverHpDecr 7 : integer # 同进攻方
+        recverHpDecrFlag 8 : integer
+        recverHpCur 9 : integer
+        recverHpMax 10 : integer
+        contri 11 : integer # 公会贡献币奖励
+        isLastKill 12 : boolean # 是否完成最后一击 
+    }
+}
+
+# 计算防守方hp减量
+WarCombatCalcRecverHpDecr 7052 {
+    request {
+        recverId 1 : integer # 防守方id
+        enRate 2 : integer # 体力消耗倍率(必填字段)
+    }
+    response {
+        err 1 : integer # err = 0 recverHpDecr有填充 
+        recverHpDecr 2 : integer # 防守方hp减量
+    }
+}
+
+# 使用技能
+# 1 前端应在本地先判断技能是否冷却完成
+#   个人技能 在sWarPlayer.skillCooling判断冷却状态
+#   全局技能 在sWarGame.skillCooling判断冷却状态
+#
+# 2 某些技能需要附加参数 应以技能的war_playerskill.group字段值拼出动态key 并赋值
+# 3 与技能逻辑相关的返回值 后端以上一条相同的规则填充
+
+
+.sSkillResultRetreat {
+    player 1 : sWarPlayer
+    enDelta 2 : integer # 体力增量 该字段值>=0
+}
+
+WarSkillUse 7060 {
+    request {
+        skillId 99 : integer
+
+        # 注意: "arg"后面的数字后缀 不是技能id 而是技能的group 即war_playerskill.group字段
+        # 4~7的技能group 需要指定目标城市
+        arg4 4 : integer # 目标城市id
+        arg5 5 : integer # 同上
+        arg6 6 : integer # 同上
+        arg7 7 : integer # 同上
+    }
+
+    response {
+        err 99 : integer
+        cdExpiry 98 : integer # 更新后的技能冷却到期时间
+
+        # 注意: "arg"后面的数字后缀 不是技能id 而是技能的group 即war_playerskill.group字段
+        arg1 1 : sWarPlayer # 回血 hpCur, hpMax
+        arg2 2 : integer    # 回军令 字段值是军令增量 应加入本地背包
+        arg3 3 : sSkillResultRetreat # 撤退 全字段有意义 因为可能撤回主城 从而触发属性、buff重置
+        arg4 4 : sWarPlayer # 空降 同上
+    }
+
+}
+
+# 公会战购买军令
+WarBuyHonor 7070 {
+    request {
+        isAd 1 : boolean # 是否广告购买
+    }
+}
+
+# 公会战按时间恢复军令
+WarRecoverHonor 7071 {
+    request {}
+}
+
+# 公会战领取军衔奖励
+WarReceiveTitleReward 7072 {
+    request {
+        titleId 1 : integer
+    }
+}
+
+# 公会战领取赛季任务奖励
+WarReceiveSeasonMission 7073 {
+    request {
+        id 1 : integer # 任务id
+    }
+}
+
+# 公会战领取主线任务奖励
+WarReceiveMainMission 7074 {
+    request {}
+}
+
+# 公会战升级商店
+WarUpgradeShopLevel 7075 {
+    request {}
+}
+
+# 公会战领取每日免费奖励
+WarReceiveDailyReward 7076 {
+    request {
+        type 1 : integer # 每日奖励类型
+    }
+}
+
+WarClaimPassport 7078 {
+    request {}
+}
+
+# 公会战力排行榜
+WarRankGuildPower 7080 {
+    request {
+    }
+    response {
+        # 1 list仅包含钻石组到黑铁组的公会  
+        # 2 数组下标就是排位序号
+        # 3 公会所属分组 由前端根据排位序号 查找war_guildgroup确定
+        list 1 : *GuildData # guildId, name, level, power
+        yourGuildRank 2 : integer # 你所在公会的排位 -1表示没有排位
+        yourGuildPower 3 : integer # 你所在公会的总战力
+    }
+}
+
+.sWarRankGuild {
+    guildId 1 : integer
+    faction 2 : integer
+    honor 3 : integer
+    flag 4 : GuildFlag
+    name 5 : ColorText
+}
+
+.sWarRankPlayer {
+    faction 1 : integer
+    title 2 : integer
+    userId 3 : integer
+    name 4 : ColorText
+    avatar 5 : PlayerAvatar
+    value 6 : integer # 参与排序的属性值
+}
+
+# 综合排行榜
+WarRankOverall 7081 {
+    request {
+    }
+    response {
+        factionCityCnt 1 : *KVIntInt # 每个元素 key是阵营 val是城市数量
+        guildRank 2 : *sWarRankGuild # 数组下边就是排位序号
+
+        # 玩家相关的子榜单字段 可以是空数组
+        # 数组下边就是排位序号
+        honorRank 3 : *sWarRankPlayer 
+        powerRank 4 : *sWarRankPlayer
+        flagRank 5 : *sWarRankPlayer
+        cureRank 6 : *sWarRankPlayer
+        defendRank 7 : *sWarRankPlayer
+        winRank 8 : *sWarRankPlayer
+    }
+}
+
+# 玩家子榜单
+WarRankPlayer 7082 {
+    request {
+        type 1 : integer # 见Enum/War.lua RANK_PLAYER_*
+    }
+    response {
+        # 数组下边就是排位序号
+        rank 1 : *sWarRankPlayer
+    }
+}
+
+# 玩家确定3选1结果
+WarRougeSelect 7083 {
+    request {
+        # 条目id 指向war_rougelike表
+        # 前端应先在本地触发cfgId对应的结果
+        # 加成型条目 更新到自己的WarPlayer.rougeBonus
+        # 物品型条目 将对应物品加入玩家背包
+        cfgId 1 : integer 
+
+        # 新种子
+        newSeed 2 : integer 
+    }
+}
+
+# 刷新3选1候选
+WarRougeRefresh 7084 {
+    request {
+        newSeed 1 : integer # 新种子
+    }
+}
+
+# 使用公会战物品
+WarItemUse 7085 {
+    request {
+        itemId 99 : integer
+
+        # 注意: arg的数字后缀 是物品配置的type2字段
+        arg1 1 : integer # cityId
+        arg2 2 : integer # cityId
+        arg3 3 : integer # cityId
+    }
+
+    response {
+        err 1 : integer # 仅当err = WarEnum.ERR_OK， 才扣减本地物品
+    }
+}
+
+# 领取受赠礼包
+WarItemClaimGift 7086 {
+    request {
+        index 1 : integer # 未领取的礼包在WarPlayer.giftList的数组下标
+    }
+    response {
+        itemList 1 : *Item # 结果物品数组 将其加入本地背包 并将WarPlayer.giftList[index].claimed置为true 表示已领取
+    }
+}
+
+# 公会战 激活军衔礼包
+WarActiveTitleGift 7090 {
+    request {
+        id 1 : integer # 礼包id
+    }
+}
+
+# 公会战 免费领取军衔礼包
+WarReceiveFreeTitleGift 7091 {
+    request {
+        id 1 : integer # 礼包id
+    }
+}
+
+# 公会战 领取免费补给礼包
+WarReceiveFreeSupplyGift 7092 {
+    request {
+        id 1 : integer # 礼包id
+    }
+}
+
+#########################################
+# ige活动
+#########################################
+
+# 子类型-挑战相关
+IgeChallengeStartBattle 7200 {
+    request {
+    }
+}
+
+IgeChallengeEndBattle 7201 {
+    request {
+        point 1 : integer(2)
+        killNum 2 : integer
+        layer 3 : integer
+        rate 4 : integer
+    }
+}
+
+# 挑战玩法 榜单条目
+.IgeChallengeRankEntry {
+    userId 1 : integer
+    score 2 : integer(2) # 参与排位的分数
+    name 3 : ColorText # 玩家名
+    avatar 4 : PlayerAvatar # 玩家头像
+    guildName 5 : ColorText # 公会名 注意判空
+}
+
+IgeQueryChallengeRankList 7202 {
+    request {
+    }
+    response {
+        rankList 1 : *IgeChallengeRankEntry # 精确榜单条目列表 
+        userRank 2 : integer # 当前玩家排位 若为nil 则表示未进入榜单
+        rankSize 3 : integer # 榜单总人数 userRank/rankSize就是排位百分比
+    }
+}
+
+IgeQueryChallengeUserRank 7203 {
+    request {
+    }
+    response {
+        userRank 1 : integer # 当前玩家排位 若为nil 则表示未进入榜单
+    }
+}
+
+IgeNotifyNewCycle 7204 {
+    request {
+        igeData 1 : UserData.IgeActivity
+    }
+}
+
+# 活动签到
+Ige1SignIn 7210 {
+    request {}
+}
+
+# 故事关卡-开始战斗
+Ige2StartBattle 7220 {
+    request {
+        stageId 1 : integer
+    }
+}
+
+# 故事关卡-结束战斗 
+Ige2EndBattle 7221 {
+    request {
+        stageId 1 : integer # 关卡id
+        result 2 : integer # 战斗结果
+        killNum 3 : integer # 怪物击败数
+    }
+}
+
+# 故事关卡-快速战斗
+Ige2QuickBattle 7222 {
+    request {
+        stageId 1 : integer # 关卡id
+        count 2 : integer # 代金券数量
+    }
+}
+
+# 活动-挑战领取当日奖励
+Ige3ReceiveReward 7230 {
+    request {
+    }
+}
+
+# 活动-每日任务点数奖励
+Ige4ReceivePointReward 7240 {
+    request {
+        index 1 : integer # 奖励索引
+    }
+}
+
+# 活动-领取每日任务
+Ige4ReceiveMission 7241 { 
+    request {
+        id 1 : integer # 任务id
+    }
+}
+
+# 活动-领取所有任务
+Ige4ReceiveAllMission 7242 { 
+    request {
+    }
+}
+
+# 活动-商店购买商品
+Ige5BuyGoods 7250 { 
+    request {
+        goodsId 1 : integer # 商品id
+        count 2 : integer # 购买数量
+    }
+}
+
+# 活动-通行证-购买等级
+Ige6BuyLevel 7260 {
+    request {}
+}
+
+# 活动-通行证-领取
+Ige6Claim 7261 { 
+    request {}
+}
+
+# 活动-免费礼包
+Ige7BuyFreeGift 7270 { 
+    request {
+        id 1 : integer #商品id
+    }
+}
+
+# 活动-点金手-领取
+Ige8Claim 7275 { 
+    request {}
+}
+
+# 排行榜 查询榜单
+.RankQueryEntry {
+    uid 1 : integer # 玩家id
+    name 2 : string # 玩家昵称
+    score 3 : integer # 积分
+}
+ 
+RankQuery 8001 {
+    request {
+        type 1 : integer # 榜单类型id
+    }
+
+    response {
+        list 1 : *RankQueryEntry # 榜单 数组下标就是排位序号
+        yourRank 2 : integer     # 当前玩家在榜单中的排位序号 若该值小于0 表示玩家未进入排行榜
+        yourScore 3 : integer    # 当前玩家的积分
+        leftTime 4 : integer     # 离赛季结束的剩余秒数
+    }
+}
+
+RankWorldBossQuery 8100 {
+    request {
+    }
+
+    response {
+        list 1 : *RankQueryEntry # 榜单 数组下标就是排位序号
+        yourRank 2 : integer     # 当前玩家在榜单中的排位序号 若该值小于0 表示玩家未进入排行榜
+        yourScore 3 : integer    # 当前玩家的积分
+        leftTime 4 : integer     # 离赛季结束的剩余秒数
+        groupType 5 : string     # 分组类型 normal(普通) elite(精英) king(王者)
+    }
+}
+
+RankGetAllLeftTime 8200 {
+    response {
+        k101 1 : integer        # 副本101
+        k102 2 : integer        # 副本102
+        k201 3 : integer        # 副本201
+        worldBoss 4 : integer   # 世界boss
+    }
+}
+
+PointSubscribe 9000 {
+    request {
+        key 1 : string
+        val 2 : integer
+    }
+}
+
+####################################
+# 全服榜单
+####################################
+
+.GlobalRankEntry {
+    .Player {
+        info 1 : UserData.Basic # id, name, colorIndex, avatar有效
+        score 2 : integer # 积分
+    }
+
+    .Guild {
+        info 1 : GuildData # guildId, name, flag有效
+        score 2 : integer # 积分
+    }
+}
+
+GlobalRankPullRankList 9910 {
+    request {
+        # 榜单类型
+        # 1 玩家战力
+        # 2 玩家主线进度
+        # 3 公会战力
+
+        type 1 : integer 
+    }
+
+    response {
+        # rankList1 1 : *GlobalRankEntry.Player # 玩家战力榜单
+        # rankList2 2 : *GlobalRankEntry.Player # 玩家主线进度榜单
+        # rankList3 3 : *GlobalRankEntry.Guild  # 公会战力榜单
+
+        rankList 1 : string # 对应榜单列表 cmsgpack.pack后的字符串
+    }
+}
+
+
+# 获取随机值
+GMGetRandomValue 9997 {
+    request {}
+    response {
+        lastRandomValue 1 : integer   # 最后一次随机值
+    }
+}
+
+# 获取玩家数据
+GMGetPlayerData 9998 {
+    request {}
+    response {
+        userData 1 : UserData   # 玩家数据
+    }
+}
+
+GMCommandAction 9999 {
+    request {
+        type 1 : integer #GM的命令类型
+        body 2 : GMDataBody # GM数据
+    }
+}
+
+# 读指定id玩家数据
+PullUserData 11000 {
+    request {
+        userId 1 : integer
+    }
+    response {
+        err 1 : integer # 错误码 0代表成功 userData字段有意义
+        userData 2 : UserData   # 玩家数据
+        guildData 3 : GuildData # 公会数据
+    }
+}
+
+# 拉取discord邀请链接
+PullDiscordUrl 11001 {
+    request {
+    }
+    response {
+        url 1 : string
+    }
+}
+
+# 拉取玩家二进制存档
+PullUserDataBin 11002 {
+    request {
+        userId 1 : integer
+    }
+    response {
+        err 1 : integer # 错误码 0代表成功 userBin字段有意义
+        userBin 2 : string # 调用cmsgpack.unpack(userBin) 即可获得UserData
+    }
+}
+
+####################################
+# 资源战争
+####################################
+
+.ResourceWarUserData {
+    # 用于业务逻辑的字段
+    userId 1 : integer
+    score 2 : integer   # 积分
+    resCalcTime 3 : integer  # 最后一次资源计算时间
+    resCount 4 : integer # 资源数量(用于玩家自行领取、其他玩家抢夺)
+    power 5 : integer # 战力
+
+    # 用于展示的字段
+    name 20 : ColorText       # 玩家名称
+    avatar 21 : PlayerAvatar  # 玩家头像
+    title 22 : string         # 玩家称号
+
+    guildName 23 : ColorText  # 公会名称 注意判空
+
+}
+
+.ResourceWarBattleLog {
+    .PlayerInfo {
+        userId 1 : integer
+        name 2 : ColorText # 玩家名称
+        avatar 3 : PlayerAvatar # 玩家头像
+        guildName 4 : ColorText # 公会名称 注意判空
+        scoreDelta 5 : integer # 积分变化量
+        resourceDelta 6 : integer # 资源变化量
+        power 7 : integer # 战力
+    }
+
+    time 1 : integer # 战斗时间
+    isAttackerWin 2 : boolean # 进攻方是否胜利
+    attacker 3 : PlayerInfo # 进攻方玩家信息
+    defender 4 : PlayerInfo # 防守方玩家信息
+}
+
+.ResourceWarMessage {
+    .MsgBattleEnd {
+        userData 1 : ResourceWarUserData # 防守方战后数据
+        userRank 2 : integer # 防守方战后排名
+        logData 3 : ResourceWarBattleLog # 战斗日志数据
+    }
+
+    type 99 : integer
+
+    arg1 1 : integer # 赛季战斗开始 该字段值无意义 收到消息后 客户端应再次调用ResourceWarLogin协议
+    arg2 2 : MsgBattleEnd # 战斗结束 仅防守方收到该消息
+}
+
+.ResourceWarOpponent {
+    opponentData 1 : ResourceWarUserData # 对手数据
+    scoreDelta 2 : integer # 积分变化量
+    resourceDelta 3 : integer # 资源变化量
+}
+
+ResourceWarLogin 11010 {
+    request {
+    }
+    response {
+        state 1 : integer # 0:无赛季 1:备战阶段 2:开赛阶段 若state=0 则后续字段都无意义
+        prepareEndTime 2 : integer # 准备阶段结束时间 当state = 1有意义
+        seasonEndTime 3 : integer # 当前赛季结束事件 当state = 2有意义
+        battleLogs 4 : *ResourceWarBattleLog # 战斗日志列表 当state=2有意义
+    }
+}
+
+ResourceWarClaimResource 11011 {
+    request {
+    }
+    response {
+        claimedResCount 1 : integer # 领取的资源数量 用于进包
+        userData 2 : ResourceWarUserData # resCalcTime, resCount有更新
+    }
+}
+
+ResourceWarNotify 11012 {
+    request {
+        msg 1 : ResourceWarMessage
+    }
+}
+
+ResourceWarMatchOpponents 11013 {
+    request {
+    }
+    response {
+        opponents 1 : *ResourceWarOpponent  # 匹配结果
+    }
+}
+
+ResourceWarBeginBattle 11014 {
+    request {
+        opponentId 1 : integer # 选定的对手玩家id
+    }
+    response {
+        ok 1 : boolean # true:成功 false:失败,被其他玩家抢先
+    }
+}
+
+ResourceWarEndBattle 11015 {
+    request {
+        isWin 1 : boolean # 是否胜利
+    }
+    response {
+        scoreDelta 1 : integer # 积分变化量
+        resourceDelta 2 : integer # 资源变化量 前端自行进包
+        systemResourceDelta 3 : integer # 系统资源变化量 前端自行进包
+        logData 4 : ResourceWarBattleLog # 战斗日志
+        userData 5 : ResourceWarUserData # 战斗结束后玩家数据 resCount, resCalcTime有更新
+        userRank 6 : integer # 战后排名
+        opponentScoreDelta 7 : integer # 对手积分变化量
+    }
+}
+
+ResourceWarRefreshUser 11016 {
+    request {
+    }
+    response {
+        userData 1 : ResourceWarUserData # 刷新后的玩家数据
+        userRank 2 : integer # 刷新后的排名
+    }
+}
+
+ResourceWarPullRankList 11017 {
+    request {
+    }
+    response {
+        rankList 1 : *ResourceWarUserData # 排名列表 数组下标就是排位序号
+    }
+}
+
+# 资源战争重置商店
+ResourceWarResetShop 11018 {
+    request {
+    }
+}
+
+# 资源战争重置挑战票
+ResourceWarRestTicket 11019 {
+    request {
+    }
+}
+
+# 资源战争购买商品
+ResourceWarBuyGoods 11020 { 
+    request {
+        goodsId 1 : integer # 商品id
+        count 2 : integer # 购买数量
+    }
+}
+
+# 资源战争购买挑战票
+ResourceWarBuyTicket 11021 { 
+    request {
+        type 1 : integer # 购买索引
+    }
+}
+
+############################
+# 世界boss
+############################
+.WorldBossGame {
+    .Boss {
+        bossIndex 1 : integer # 世界boss序号
+        totalHp 2 : integer # 世界boss总血量
+        totalDmg 3 : integer # 玩家造成的总伤害
+        expiry 4 : integer # 世界boss过期时间
+        dead 5 : boolean # boss是否死亡
+    }
+
+    bossList 1 : *Boss # 世界boss列表 数组下标就是boss序号 数组最后一个位置的boss 是当前boss
+}
+
+.WorldBossMessage {
+    type 99 : integer # 事件类型 1:赛季战斗阶段开始
+
+    arg1 1 : integer # 赛季战斗阶段开始 该字段的值无意义
+}
+
+.WorldBossRankInfo {
+    userId 1 : integer
+    name 2 : ColorText # 玩家名称
+    avatar 3 : PlayerAvatar # 玩家头像
+    score 4 : integer # 玩家造成的总伤害
+}
+
+WorldBossNotify 11050 {
+    request {
+        msg 1 : WorldBossMessage
+    }
+}
+
+WorldBossLogin 11051 {
+    request {
+    }
+    response {
+        state 1 : integer # 0:无赛季 1:备战阶段 2:开赛阶段 若state=0 则后续字段都无意义
+        prepareEndTime 2 : integer # 准备阶段结束时间 当state = 1有意义
+        seasonEndTime 3 : integer # 当前赛季结束事件 当state = 2有意义
+        game 4 : WorldBossGame # 世界boss游戏数据 当state = 2有意义
+    }
+}
+
+WorldBossEndBattle 11053 {
+    request {
+        dmg 1 : integer # 玩家造成的伤害
+    }
+}
+
+WorldBossPullRankList 11054 {
+    request {
+    }
+    response {
+        rankList 1 : *WorldBossRankInfo # 排名列表 数组下标就是排位序号
+        userRank 2 : integer # 你的排位 nil表示未进入榜单
+        userScore 3 : integer # 你的伤害 nil表示未进入榜单
+    }
+}
+
+# 领取世界boss奖励
+WorldBossReceiveReward 11055 { 
+    request {
+        turn 1 : integer # boss轮次
+        index 2 : integer # 奖励索引
+    }
+}
+
+# 领取世界boss所有奖励
+WorldBossReceiveAllReward 11056 { 
+    request {}
+}
+
+#########################################
+# 混沌战争
+#########################################
+.sChaosWarBuff {
+    id 1 : integer
+    extraArg 2 : integer # 额外数据 目前用于疲劳buff等级
+}
+
+.sChaosWarLog {
+    # 战斗日志
+    .CombatLog {
+        .Entry {
+            player 1 : sChaosWarPlayer
+            hpDelta 2 : integer
+            expDelta 3 : integer
+            coinDelta 4 : integer
+            honorDelta 5 : integer
+        }
+
+        isSenderWin 1 : boolean
+        sender 2 : Entry
+        recver 3 : Entry
+    }
+
+    # 接收技能伤害日志
+    .RecvSkillDamage {
+        caster 1 : sChaosWarPlayer # 施法者 faction, name
+        skillId 2 : integer # 技能id
+        hpDelta 3 : integer # 伤害值
+    }
+
+    
+    type 99 : integer # 日志类型
+    time 98 : integer # 日志时间
+
+    arg1 1 : CombatLog
+    arg2 2 : RecvSkillDamage
+}
+
+.sChaosWarPlayer {
+    userId 1 : integer
+    name 2 : ColorText # 玩家名称
+    avatar 3 : PlayerAvatar # 头像
+    guildName 4 : ColorText # 公会名称 注意判空
+    guildFlag 5 : GuildFlag # 公会旗帜 注意判空
+    faction 6 : integer # 阵营
+
+    power 7 : integer # 战力
+    cityId 8 : integer # 所在城市id
+    maxHp 9 : integer # 最大血量
+    curHp 10 : integer # 当前血量
+    honor 11 : integer # 军功
+    title 12 : integer # 段位、军衔
+    titleExp 13 : integer # 段位、军衔经验值
+    attackTimes 14 : integer # 攻击次数
+    defenseTimes 15 : integer # 防御次数
+    coolingSkills 16 : *KVIntInt() # 冷却中的技能字典 skillId : expiry
+    buffDict 17 : *sChaosWarBuff(id) # 玩家buff字典 键为buffId 
+    logs 18 :  *sChaosWarLog # 战斗日志
+    fuelCache 19 : integer # 炼油厂产出的 未进包燃料数量
+}
+
+.sChaosWarCity {
+    .Defender {
+        player 1 : sChaosWarPlayer # 玩家信息
+        occupyRateDelta 2 : integer(3) # 占领率变化量
+        coinDelta 3 : integer # 混沌币变化量
+    }
+
+    id 1 : integer
+    faction 2 : integer
+
+    localDefenderCnt 3 : integer # 守城人数
+    combatIntensity 4 : integer(3) # 战斗烈度
+    occupyRateDict 5 : *KVIntNum() # 占领率字典 键为阵营id 值为占领率(0.0 ~ 1.0)
+
+    localDefenders 6 : *Defender # 守城玩家列表 注意: 仅ChaosWarCityDetail协议会填充此字段 
+    remoteDefenders 7 : *Defender # 协防玩家列表 注意: 仅ChaosWarCityDetail协议会填充此字段
+}
+
+.sChaosWarGroup {
+    seasonId 1 : integer
+    seasonEndTime 2 : integer
+    groupId 3 : integer
+    cityDict 4 : *sChaosWarCity(id) # 城市字典 键为城市id 值为城市信息 注意: 守城、协防玩家列表是nil
+    you 5 : sChaosWarPlayer # 你自己的玩家信息
+    systemMsgList 6 : *sChaosWarMessage # 系统消息列表
+    worldMsgList 7 : *sChaosWarMessage # 世界消息列表
+    factionMsgList 8 : *sChaosWarMessage # 阵营消息列表
+}
+
+.sChaosWarMessage {
+    .Chat {
+        player 1 : sChaosWarPlayer # 玩家信息 userId, name, avatar, guildName, guildFlag, faction等字段有效
+        args 2 : *string # 聊天内容 注意处理多语言
+    }
+
+    # 更新城市信息
+    .UpdateCity {
+        # 包含: id, faction, occupyRateDict, localDefenderCnt
+        cityList 1 : *sChaosWarCity 
+    }
+
+    # 城市归属权变更
+    .ExchangeCity {
+        # 被占领城市
+        # 包含: id, faction, occupyRateDict, localDefenderCnt
+        occupiedCity 1 : sChaosWarCity 
+
+        # 从occupiedCity清退的 上一阵营userId字典
+        # 收到消息的客户端检查 若自己在这个字典中 那么就让自己退避到fallbackCityId对应的城市 
+        fallbackPlayers 2 : *KVIntInt() 
+
+        # 退避的目标城市id
+        fallbackCityId 3 : integer
+    }
+
+    # 更新buff
+    .UpdateBuff {
+        type 1 : integer # 1增加或覆盖 2移除
+        buff 2 : sChaosWarBuff
+    }
+
+    # 技能打击城市
+    .SkillAttackCity {
+        caster 1 : sChaosWarPlayer # 施法者 仅faction, name有效
+        city 2 : sChaosWarCity # 城市 仅faction, id有效
+        skillId 3 : integer # 技能id
+    }
+
+    channel 99 : integer # 频道: 1系统 2世界 3阵营
+    type 98 : integer # 类型: 相见ChaosWarEnum.lua
+    time 97 : integer # 事件发生时间
+
+    arg1 1 : Chat
+    arg2 2 : UpdateCity
+    arg3 3 : ExchangeCity
+    arg4 4 : *UpdateBuff
+    arg5 5 : sChaosWarPlayer # 关键军衔更新
+    arg6 6 : sChaosWarLog # 追加玩家日志
+    arg7 7 : sChaosWarPlayer # 被击杀且踢回主城 除logs字段外其他字段有效
+    arg8 8 : SkillAttackCity
+    arg9 9 : *sChaosWarPlayer # 列表中的玩家需更新hp  userId, curHp, maxHp有效
+}
+
+.sChaosRankEntry {
+    userId 1 : integer
+    name 2 : ColorText # 玩家名称
+    faction 3 : integer
+    score 4 : integer # 分数
+}
+
+
+ChaosWarLogin 11100 {
+    request {
+    }
+    response {
+        state 1 : integer # 0:无赛季 1:备战阶段 2:开赛阶段 若state=0 则后续字段都无意义
+        prepareEndTime 2 : integer # 准备阶段结束时间 当state = 1有意义
+        seasonEndTime 3 : integer # 当前赛季结束时间 当state = 2有意义
+        groupData 4 : sChaosWarGroup # 组数据 当state = 2有意义
+        rankSize 5 : integer # 匹配池大小
+    }
+}
+
+ChaosWarNotify 11101 {
+    request {
+        msg 1 : sChaosWarMessage
+    }
+}
+
+ChaosWarChat 11102 {
+    request {
+        channel 1 : integer
+        args 2 : *string # 聊天内容
+    }
+}
+
+ChaosWarRankPull 11103 {
+    request {
+    }
+    response {
+        rankList 1 : *sChaosRankEntry # 排名列表
+        yourRank 2 : integer # nil表示未上榜
+    }
+}
+
+
+ChaosWarCityDetail 11110 {
+    request {
+        cityId 1 : integer
+    }
+    response {
+        city 1 : sChaosWarCity # 城市信息
+    }
+}
+
+ChaosWarCityMove 11111 {
+    request {
+        path 1 : *integer # 起点城市到终点城市的id列表
+    }
+    response {
+        err 1 : integer
+        player 2 : sChaosWarPlayer # cityId, title, titleExp有效
+    }
+}
+
+ChaosWarCityQueryCombatIntensity 11112 {
+    request {
+    }
+    response {
+        dict 1 : *KVIntNum() # key是cityId value是战斗烈度
+    }
+}
+
+# 收到通知 且type = kMsgTypeClaimFuel
+# 调用此协议收取炼油厂产出的燃料 并加入本地背包
+ChaosWarCityClaimFuel 11113 {
+    request {
+    }
+    response {
+        fuelCnt 1 : integer
+    }
+}
+
+
+ChaosWarPlayerSkillUse 11115 {
+    request {
+        skillId 99 : integer # 技能id
+
+        # 以cfg_chaos_playerskill.group为key 设置下列参数
+        arg1 1 : integer # cityId
+        arg2 2 : integer # cityId
+        arg3 3 : integer # cityId
+    }
+    response {
+        err 1 : integer
+        cdExpiry 2 : integer # 更新后的技能cd过期时间 仅当err = kErrOk有意义
+    }
+}
+
+ChaosWarPlayerSkillCheck 11116 {
+    request {
+        skillId 1 : integer # 技能id
+    }
+    response {
+        err 1 : integer
+    }
+}
+
+
+ChaosWarCombatBegin 11120 {
+    request {
+        cityId 1 : integer # 战斗所在城市id
+        recverId 2 : integer # 被攻击玩家id
+        isRemoteRecver 3 : boolean # 是否是协防玩家
+        combatCount 4 : integer # 战斗次数
+    }
+    response {
+        err 1 : integer
+    }
+}
+
+ChaosWarCombatEnd 11121 {
+    request {
+        senderWin 1 : boolean # 进攻方是否胜利
+        senderHpRatio 2 : integer(3) # 进攻方 损失的血量百分比
+        senderShellRatio 3 : integer(3) # 进攻方 损失的护盾百分比
+        recverHpRatio 4 : integer(3) # 防守方 损失的血量百分比
+        recverShellRatio 5 : integer(3) # 防守方 损失的护盾百分比
+    }
+    response {
+        occupyRateDelta 1 : integer(3) # 占领率变化量
+        occupyRateDict 2 : *KVIntNum() # 占领率字典 键为阵营id 值为占领率(0.0 ~ 1.0)
+
+        # 进攻方玩家信息(更新后)
+        # 包含: name, avatar, curHp, maxHp, honor, title, titleExp, cityId, buffDict
+        sender 3 : sChaosWarPlayer 
+        senderHpDelta 4 : integer # 血量变化量
+		senderExpDelta 5 : integer # 经验变化量
+		senderCoinDelta 6 : integer # 混沌币变化量
+		senderHonorDelta 7 : integer # 荣誉变化量
+
+        # 防守方玩家信息(更新后)
+        # 包含: name, avatar, curHp, maxHp, honor, title, titleExp, cityId, buffDict
+        recver 8 : sChaosWarPlayer 
+        recverHpDelta 9 : integer # 血量变化量
+        recverKilled 10 : boolean # 是否被击杀
+    }
+}
+
+# 混沌战争购买体力
+ChaosWarBuyEnergy 11122 {
+    request {
+        isAd 1 : boolean # 是否广告购买
+    }
+}
+
+# 混沌战争恢复体力
+ChaosWarRecoverEnergy 11123 {
+    request {}
+}
+
+# 混沌战争领取军衔奖励
+ChaosWarReceiveTitleReward 11124 {
+    request {}
+}
+
+# 混沌战争领取每日典藏卡奖励
+ChaosWarReceiveDailyVip 11125 {
+    request {}
+}
+
+# 混沌战争领取通行证奖励
+ChaosWarReceivePassReward 11126 {
+    request {
+        index 1 : integer
+        isPay 2 : boolean
+    }
+}
+
+# 混沌战争购买商品
+ChaosWarBuyGoods 11127 { 
+    request {
+        goodsId 1 : integer # 商品id
+        count 2 : integer # 购买数量
+    }
+}
+
+# EventPackClaim
+
+EventPackClaimFree 12000 {
+    request {
+        id 1 : integer
+        index 2 : integer
+    }
+}
+
+DiscountPackClaim 12001 {
+    request {
+        id 1 : integer
+    }
+}
+
+DiscountPackUpdateTime 12002 {
+    request {}
+}
+
+ColSignSelectDice 12003 { 
+    request {
+        id 1 : integer
+    }
+}
+
+ColSignRollDice 12004 { 
+    request {
+        id 1 : integer
+    }
+}
+ColSignIn 12005 { 
+    request {}
+}
+
+##########################################
+# 世界杯
+##########################################
+
+# 拉取
+WorldCupGetMatchInfo 12006 { 
+    request {}
+    response {
+        matchInfo 1 : string
+    }
+}
+
+# 签到
+WorldCupSignIn 12007 { 
+    request {}
+}
+
+# 商店购买
+WorldCupBuyGoods 12008 { 
+    request {
+        goodsId 1 : integer
+    }
+}
+
+# 任务领取
+WorldCupTaskClaim 12009 { 
+    request {
+        type 1 : integer # 任务类型
+     }
+}
+
+# 投注 
+WorldCupBet 12010 { 
+    request {
+        matchId 1 : string # 比赛id
+        teamId 2 : string # 队伍id
+        isHostTeam 3 : boolean # 是否主队
+        tickets 4 : integer # 投注数量
+    }
+}
+
+# 选择主队
+WorldCupSelectTeam 12011 { 
+    request {
+        id 1 : string
+    }
+}
+
+# 领取离线奖励
+WorldCupClaimOfflineReward 12012 { 
+    request {}
+}
+
+.WorldCupGetHeatMapEntry {
+    matchId 1 : string
+    hostTeamTickets 2 : integer # 注意判空
+    guestTeamTickets 3 : integer # 注意判空
+} 
+
+# 拉取热度图
+WorldCupGetHeatMap 12013 {
+    request {}
+    response {
+        heatMap 1 : *WorldCupGetHeatMapEntry
+    } 
+}
+
+# 领取投注的奖励
+WorldCupClaimBetReward 12014 {
+    request {
+        matchId 1 : string
+    }
+ }
+
+# 重置投注
+WorldCupResetBet 12015 { 
+    request {
+        matchId 1 : string # 比赛id
+        teamId 2 : string # 队伍id
+        isHostTeam 3 : boolean # 是否主队
+    }
+}
+
+##########################################
+# Monopoly
+##########################################
+
+MonopolyStartTurn 12016 { 
+    request {}
+}
+MonopolyResetBetAmount 12017 { 
+    request {}
+}
+MonopolyUpdateBetAmount 12018 { 
+    request {
+        count 1 : integer
+    }
+}
+MonopolySellGoods 12019 { 
+    request {}
+}
+MonopolyPassClaimReward 12020 { 
+    request {}
+}
+MonopolyPassClaimExReward 12021 { 
+    request {}
+}
+MonopolyShopBuy 12022 { 
+    request {
+        page 1 : integer
+        index 2 : integer
+    }
+}
+MonopolyClaimTaskReward 12023 { 
+    request {
+        id 1 : integer
+    }
+}
+
+###################################
+# 材料合成
+####################################
+ItemMaterialMerge 12030 { 
+    request {
+        id 1 : integer
+        count 2 : integer
+    }
+}
+
+##########################################
+# Anniversary
+##########################################
+AnniversaryPassClaim 12040 {
+    request {}
+}
+
+AnniversaryMissionClaim 12041 {
+    request {
+        id 1 : integer
+    }
+}
+
+AnniversarySelectCustomHero 12042 { 
+    request {
+        hero_ids 1 : *KVIntInt()
+    }
+}
+
+AnniversaryBuyFreeGoods 12043 { 
+    request {
+        id 1 : integer
+    }
+}
+
+AnniversaryBuyGoods 12044 { 
+    request {
+        id 1 : integer
+        count 2 : integer
+    }
+}
+
+AnniversaryExchangeSelect 12045 { 
+    request {
+        id 1 : integer
+        index 2 : integer
+    }
+}
+
+AnniversaryUpdateRateIndex 12046 { 
+    request {}
+}
+
+AnniversaryThrow 12047 { 
+    request {}
+}
+
+AnniversaryThrowProgressClaim 12048 {
+    request {
+        id 1 : integer
+    }
+}
+
+##########################################
+# DiscountPack
+##########################################
+
+# 选择
+DiscountChangeChooseIndex 12060 {
+    request {
+        id 1 : integer
+        selects 2 : *KVIntInt()
+    }
+}
+
+DiscountPackGemBuy 12061 { 
+    request {
+        id 1 : integer
+    }
+}
+
+
+##########################################
+# 回退
+##########################################
+TowerRollbackTa 12100 {
+    request {
+        id 1 : integer
+    }
+}
+TowerRollbackCh 12101 {
+    request {
+        id 1 : integer
+    }
+}
+TitanRollbackDevelop 12102 { 
+    request {
+        id 1 : integer
+    }
+}
+TitanRollbackSkills 12103 { 
+    request {
+        id 1 : integer
+    }
+}
+
+##########################################
+# 周年庆2
+##########################################
+Anniversary2QuickUpgradePassport 12110 { 
+    request { }
+}
+
+Anniversary2ClaimPassport 12111 { 
+    request { }
+}
+
+Anniversary2ClaimPassportTask 12112 { 
+    request { 
+        id 1 : integer
+    }
+}
+
+Anniversary2ClaimPassportTaskAll 12113 { 
+    request { }
+}
+
+Anniversary2ClaimRebate 12114 { 
+    request { }
+}
+
+Anniversary2GoldsmithInvest 12115 { 
+    request { 
+        id 1 : integer
+    }
+}
+
+Anniversary2PilotFreeClaim 12116 { 
+    request {
+        id 1 : integer
+    }
+}
+
+Anniversary2PilotRewardClaim 12117 {
+    request {
+        id 1 : integer
+    }
+}
+
+Anniversary2SignInClaim 12118 {
+    request { }
+}

@@ -1,0 +1,41 @@
+<idea-plugin>
+    <id>dev.sproto.language</id>
+    <name>Sproto Language</name>
+    <version>0.1.6</version>
+    <vendor>Yexiao</vendor>
+    <description><![CDATA[
+        <h2>Features</h2>
+        <p>Author: Yexiao.</p>
+        <ul>
+            <li>Native Sproto support for JetBrains Rider: syntax highlighting, scoped and cross-file type navigation.</li>
+            <li>Separate colors for type declarations/references, field declarations/dictionary keys, protocols, built-in types, numbers and punctuation.</li>
+            <li>GUI color and font settings under Editor → Color Scheme → Sproto, with theme inheritance.</li>
+            <li>White fields, blue built-in types and light-yellow protocol method names (#DCDCAA) by default; numbers inherit the theme.</li>
+            <li>Contextual completion, type/field documentation, protocol templates and line comments.</li>
+            <li>Syntax and type diagnostics for unknown/ambiguous types, duplicate names/tags, dictionary keys and fixed-point precision.</li>
+            <li>Nested types, arrays, dictionaries, fixed-point integers, inline request/response bodies and response nil.</li>
+        </ul>
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://github.com/cloudwu/sproto#schema-language">Sproto Schema Language</a></li>
+            <li><a href="https://plugins.jetbrains.com/docs/intellij/custom-language-support.html">IntelliJ Custom Language Support</a></li>
+            <li><a href="https://plugins.jetbrains.com/docs/intellij/color-scheme-management.html">JetBrains Color Scheme Management</a></li>
+        </ul>
+        <h2>Generation</h2>
+        <p>This plugin's code, features and documentation were generated and refined by OpenAI Codex according to Yexiao's requirements.</p>
+    ]]></description>
+    <idea-version since-build="252" until-build="252.*"/>
+    <depends>com.intellij.modules.platform</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType name="Sproto" language="Sproto" implementationClass="dev.sproto.SprotoSupport$SprotoFileType" fieldName="INSTANCE" extensions="sproto"/>
+        <lang.parserDefinition language="Sproto" implementationClass="dev.sproto.SprotoSupport$SprotoParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="Sproto" implementationClass="dev.sproto.SprotoSupport$HighlighterFactory"/>
+        <annotator language="Sproto" implementationClass="dev.sproto.SprotoSupport$SprotoAnnotator"/>
+        <completion.contributor language="Sproto" implementationClass="dev.sproto.SprotoSupport$SprotoCompletion"/>
+        <lang.documentationProvider language="Sproto" implementationClass="dev.sproto.SprotoSupport$SprotoDocumentation"/>
+        <lang.commenter language="Sproto" implementationClass="dev.sproto.SprotoSupport$SprotoCommenter"/>
+        <colorSettingsPage implementation="dev.sproto.SprotoSupport$SprotoColorSettings"/>
+        <additionalTextAttributes scheme="Default" file="colorSchemes/SprotoDefault.xml"/>
+        <additionalTextAttributes scheme="Darcula" file="colorSchemes/SprotoDarcula.xml"/>
+    </extensions>
+</idea-plugin>
