@@ -1,0 +1,14 @@
+[
+  {
+    "file": "sproto-rider-1.0.1.zip",
+    "version": "1.0.1",
+    "bytes": 437127,
+    "sha256": "6F344422BC7B923E8337BA1C2EDF33A555512A49B35A51370155E5AD6E87F18F"
+  },
+  {
+    "file": "sproto-vscode-1.0.1.vsix",
+    "version": "1.0.1",
+    "bytes": 470420,
+    "sha256": "9CFB918DB5124A001F2140ED8E92E6E9BBDC6F97CD5B886FDD19E8156F4DD989"
+  }
+]
