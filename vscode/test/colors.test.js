@@ -14,7 +14,11 @@ test('GUI settings schema covers all categories and inherits native defaults', (
   assert.ok(manifest.repository.url.startsWith('https://github.com/'));
   const readme = require('node:fs').readFileSync(require('node:path').join(__dirname, '../README.md'), 'utf8');
   const image = readme.match(/<img\s+src="([^"]+)"/);
-  assert.ok(image && image[1].startsWith('https://raw.githubusercontent.com/'));
+  assert.ok(image, 'README must include a logo');
+  if (!image[1].startsWith('https://')) {
+    assert.ok(!/^[a-z]+:/i.test(image[1]), 'Image must be HTTPS or a local relative path');
+    assert.ok(require('node:fs').existsSync(require('node:path').resolve(__dirname, '..', image[1])), 'Relative logo must exist in the extension');
+  }
   const properties = manifest.contributes.configuration.properties;
   assert.equal(manifest.contributes.configuration.title, 'Sproto');
   for (const c of colors.categories) {

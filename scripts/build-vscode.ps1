@@ -41,10 +41,22 @@ try {
 </PackageManifest>
 "@
     $extensionRoot = (Resolve-Path -LiteralPath (Join-Path $taskRoot 'vscode')).Path
-    $extensionFiles = @('package.json','README.md','images/icon.png','images/logo.png','language-configuration.json','src/core.js','src/extension.js','src/colors.js','syntaxes/sproto.tmLanguage.json','snippets/sproto.json')
+    $extensionFiles = @('package.json','images/icon.png','images/logo.png','language-configuration.json','src/core.js','src/extension.js','src/colors.js','syntaxes/sproto.tmLanguage.json','snippets/sproto.json')
     foreach ($relative in $extensionFiles) {
         [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, (Join-Path $extensionRoot $relative), "extension/$relative") | Out-Null
     }
+    # Keep local README paths editable; resolve them to HTTPS inside the VSIX.
+    $readmeText = [IO.File]::ReadAllText((Join-Path $extensionRoot 'README.md'))
+    $repositoryURL = $extensionMetadata.repository.url -replace '\.git$', ''
+    if (!$repositoryURL.StartsWith('https://github.com/')) { throw 'README image resolution requires an HTTPS GitHub repository.' }
+    $readmeBase = $repositoryURL.Replace('https://github.com/', 'https://raw.githubusercontent.com/') + '/master/'
+    if ($extensionMetadata.repository.directory) { $readmeBase += $extensionMetadata.repository.directory.Trim('/') + '/' }
+    $readmeText = [regex]::Replace($readmeText, '(<img\b[^>]*\bsrc\s*=\s*")(?!(?:[a-z]+:|/))([^"]+)(")', {
+        param($imageMatch)
+        $imageURL = [Uri]::new([Uri]$readmeBase, $imageMatch.Groups[2].Value).AbsoluteUri
+        $imageMatch.Groups[1].Value + $imageURL + $imageMatch.Groups[3].Value
+    })
+    Write-ZipText 'extension/README.md' $readmeText
     [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, (Join-Path $taskRoot 'LICENSE'), 'extension/LICENSE.txt') | Out-Null
 } finally { $zip.Dispose() }
 Write-Output "VS Code package: $packagePath"
